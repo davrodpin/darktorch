@@ -3,6 +3,9 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { TimerDisplay } from './components/TimerDisplay';
+import { TimerControls } from './components/TimerControls';
+import { useTimer } from './hooks/useTimer';
 
 const darkTheme = createTheme({
   palette: {
@@ -13,14 +16,26 @@ const darkTheme = createTheme({
     secondary: {
       main: '#8b4513',
     },
+    warning: {
+      main: '#ff9800',
+    },
+    success: {
+      main: '#4caf50',
+    },
     background: {
       default: '#1a0f08',
       paper: '#2c1810',
     },
   },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
 });
 
 function App() {
+  // Initialize timer hook for countdown logic
+  useTimer();
+
   useEffect(() => {
     // Initialize Owlbear Rodeo SDK when component mounts
     const initOwlbear = async () => {
@@ -30,7 +45,7 @@ function App() {
         // Check if we're in Owlbear Rodeo environment
         if (typeof OBR !== 'undefined') {
           console.log('Dark Torch initialized in Owlbear Rodeo');
-          // TODO: Set up context menu and other SDK features in future milestones
+          // TODO: Set up context menu and other SDK features in Milestone 4
         }
       } catch (error) {
         console.error('Failed to initialize Owlbear Rodeo SDK:', error);
@@ -48,21 +63,45 @@ function App() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'flex-start',
           minHeight: '100vh',
           p: 2,
           backgroundColor: 'background.default',
+          maxWidth: '320px',
+          mx: 'auto',
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom>
-          🔥 Dark Torch
-        </Typography>
-        <Typography variant="body1" textAlign="center" color="text.secondary">
-          Real-time torch timer for Shadowdark RPG
-        </Typography>
-        <Typography variant="caption" textAlign="center" sx={{ mt: 2 }}>
-          Extension skeleton loaded - Ready for Milestone 2
-        </Typography>
+        {/* Header */}
+        <Box sx={{ textAlign: 'center', mb: 2, width: '100%' }}>
+          <Typography
+            variant="h5"
+            component="h1"
+            gutterBottom
+            sx={{ fontWeight: 'bold' }}
+          >
+            🔥 Dark Torch
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Shadowdark RPG Timer
+          </Typography>
+        </Box>
+
+        {/* Timer Display */}
+        <TimerDisplay />
+
+        {/* Timer Controls */}
+        <TimerControls />
+
+        {/* Footer */}
+        <Box sx={{ mt: 'auto', pt: 2 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            textAlign="center"
+          >
+            Milestone 2 Complete
+          </Typography>
+        </Box>
       </Box>
     </ThemeProvider>
   );

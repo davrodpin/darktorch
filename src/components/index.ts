@@ -1,2 +1,2 @@
-// Component exports will go here
-export {};
+export { TimerDisplay } from './TimerDisplay';
+export { TimerControls } from './TimerControls';

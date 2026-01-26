@@ -1,2 +1,1 @@
-// Hook exports will go here
-export {};
+export { useTimer } from './useTimer';
