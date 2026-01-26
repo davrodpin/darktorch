@@ -22,6 +22,9 @@ const darkTheme = createTheme({
     success: {
       main: '#4caf50',
     },
+    error: {
+      main: '#f44336',
+    },
     background: {
       default: '#1a0f08',
       paper: '#2c1810',
@@ -29,6 +32,23 @@ const darkTheme = createTheme({
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        '@keyframes pulse': {
+          '0%': {
+            opacity: 1,
+          },
+          '50%': {
+            opacity: 0.6,
+          },
+          '100%': {
+            opacity: 1,
+          },
+        },
+      },
+    },
   },
 });
 
@@ -99,7 +119,7 @@ function App() {
             color="text.secondary"
             textAlign="center"
           >
-            Milestone 2 Complete
+            Milestone 3 Complete 🚨
           </Typography>
         </Box>
       </Box>

@@ -19,7 +19,10 @@ export const useTimer = () => {
     // Start new interval if timer is running
     if (isRunning && remaining > 0) {
       intervalRef.current = window.setInterval(() => {
-        setTime(remaining - 1);
+        const currentRemaining = useTimerStore.getState().remaining;
+        if (currentRemaining > 0) {
+          useTimerStore.getState().setTime(currentRemaining - 1);
+        }
       }, 1000);
     }
 
@@ -32,11 +35,12 @@ export const useTimer = () => {
     };
   }, [isRunning, remaining, setTime]);
 
-  // Auto-pause when timer reaches zero
+  // Handle timer completion
   useEffect(() => {
     if (remaining === 0 && isRunning) {
-      const { pause } = useTimerStore.getState();
+      const { pause, complete } = useTimerStore.getState();
       pause();
+      complete();
     }
   }, [remaining, isRunning]);
 };

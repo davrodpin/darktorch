@@ -19,12 +19,14 @@ export const formatTime = (seconds: number): string => {
 /**
  * Creates a comprehensive time display object from seconds
  * @param seconds - Number of seconds
+ * @param isExpired - Whether the timer has expired (optional)
  * @returns TimeDisplay object with formatted components
  */
-export const createTimeDisplay = (seconds: number): TimeDisplay => {
+export const createTimeDisplay = (seconds: number, isExpired: boolean = false): TimeDisplay => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  const isLowTime = seconds < 600; // Less than 10 minutes
+  const isLowTime = seconds < 600 && seconds > 0; // Less than 10 minutes but not zero
+  const isExpiredFinal = isExpired || seconds === 0;
 
   return {
     formatted: formatTime(seconds),
@@ -32,6 +34,7 @@ export const createTimeDisplay = (seconds: number): TimeDisplay => {
     seconds: remainingSeconds,
     totalSeconds: seconds,
     isLowTime,
+    isExpired: isExpiredFinal,
   };
 };
 

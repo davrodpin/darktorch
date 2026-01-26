@@ -8,12 +8,15 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   duration: DEFAULT_DURATION,
   remaining: DEFAULT_DURATION,
   isRunning: false,
+  soundEnabled: true,
+  isCompleted: false,
+  incrementAmount: 300, // Default 5 minutes
 
   // Actions
   start: () => {
     const { remaining } = get();
     if (remaining > 0) {
-      set({ isRunning: true });
+      set({ isRunning: true, isCompleted: false });
     }
   },
 
@@ -25,6 +28,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
     set({
       remaining: DEFAULT_DURATION,
       isRunning: false,
+      isCompleted: false,
     });
   },
 
@@ -33,17 +37,45 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
     set({
       remaining: clampedSeconds,
       isRunning: clampedSeconds > 0 && get().isRunning,
+      isCompleted: clampedSeconds === 0,
     });
+  },
+
+  complete: () => {
+    set({
+      remaining: 0,
+      isRunning: false,
+      isCompleted: true,
+    });
+  },
+
+  toggleSound: () => {
+    set({ soundEnabled: !get().soundEnabled });
+  },
+
+  setSoundEnabled: (enabled: boolean) => {
+    set({ soundEnabled: enabled });
+  },
+
+  setIncrementAmount: (seconds: number) => {
+    set({ incrementAmount: seconds });
   },
 }));
 
 // Selectors for optimized re-renders
 export const useTimerRemaining = () => useTimerStore(state => state.remaining);
 export const useTimerIsRunning = () => useTimerStore(state => state.isRunning);
+export const useTimerSoundEnabled = () => useTimerStore(state => state.soundEnabled);
+export const useTimerIsCompleted = () => useTimerStore(state => state.isCompleted);
+export const useTimerIncrementAmount = () => useTimerStore(state => state.incrementAmount);
 export const useTimerActions = () =>
   useTimerStore(state => ({
     start: state.start,
     pause: state.pause,
     reset: state.reset,
     setTime: state.setTime,
+    complete: state.complete,
+    toggleSound: state.toggleSound,
+    setSoundEnabled: state.setSoundEnabled,
+    setIncrementAmount: state.setIncrementAmount,
   }));
