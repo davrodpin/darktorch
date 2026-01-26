@@ -1,0 +1,23 @@
+{
+  "name": "Dark Torch",
+  "description": "Real-time torch timer for Shadowdark RPG",
+  "version": "1.0.0",
+  "author": "davrodpin",
+  "homepage": "https://github.com/davrodpin/darktorch",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ],
+  "action": {
+    "title": "Dark Torch",
+    "icon": "icon.png",
+    "popover": {
+      "url": "index.html",
+      "width": 320,
+      "height": 240
+    }
+  }
+}

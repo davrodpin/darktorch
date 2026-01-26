@@ -1,0 +1,25 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#2c1810" stroke="#8b4513" stroke-width="3"/>
+  
+  <!-- Torch handle -->
+  <rect x="58" y="70" width="12" height="40" fill="#8b4513" stroke="#654321" stroke-width="1"/>
+  
+  <!-- Torch flame (multiple layers for depth) -->
+  <!-- Outer flame -->
+  <ellipse cx="64" cy="45" rx="18" ry="25" fill="#ff6b35" opacity="0.9"/>
+  <!-- Middle flame -->
+  <ellipse cx="64" cy="48" rx="12" ry="20" fill="#ffa500" opacity="0.9"/>
+  <!-- Inner flame -->
+  <ellipse cx="64" cy="50" rx="8" ry="15" fill="#ffff00" opacity="0.9"/>
+  
+  <!-- Flame highlights -->
+  <ellipse cx="60" cy="42" rx="4" ry="8" fill="#fff" opacity="0.6"/>
+  <ellipse cx="68" cy="48" rx="3" ry="6" fill="#fff" opacity="0.4"/>
+  
+  <!-- Torch base -->
+  <rect x="56" y="68" width="16" height="6" fill="#654321" stroke="#4a3018" stroke-width="1"/>
+  
+  <!-- Small decorative elements -->
+  <circle cx="64" cy="64" r="2" fill="#ffa500"/>
+</svg>
