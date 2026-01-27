@@ -100,26 +100,7 @@ working
 
 ---
 
-## Milestone 6: Settings and Configuration
-
-**Goal**: Implement comprehensive settings panel and configuration options.
-
-### Tasks
-
-- [ ] Create SettingsPanel component
-- [ ] Implement default timer duration setting
-- [ ] Add player permission management
-- [ ] Create sound settings configuration
-- [ ] Implement display mode persistence
-- [ ] Add timer auto-start options
-- [ ] Create settings validation and error handling
-- [ ] Add settings reset to defaults option
-
-**Deliverables**: Complete settings interface with all configuration options
-
----
-
-## Milestone 7: Shadowdark Theme and Polish
+## Milestone 6: Shadowdark Theme and Polish
 
 **Goal**: Apply Shadowdark-inspired theming and finalize visual design.
 
@@ -138,7 +119,7 @@ working
 
 ---
 
-## Milestone 8: Testing and Quality Assurance
+## Milestone 7: Testing and Quality Assurance
 
 **Goal**: Comprehensive testing and bug fixing.
 
@@ -157,7 +138,7 @@ working
 
 ---
 
-## Milestone 9: Documentation and Deployment Preparation
+## Milestone 8: Documentation and Deployment Preparation
 
 **Goal**: Complete documentation and prepare for release.
 
@@ -176,7 +157,7 @@ working
 
 ---
 
-## Milestone 10: Release and Post-Launch
+## Milestone 9: Release and Post-Launch
 
 **Goal**: Deploy extension and establish ongoing maintenance.
 
@@ -193,7 +174,9 @@ working
 
 **Deliverables**: Published extension, ongoing support infrastructure
 
-## Milestone 11: Extra changes and hardening
+## Milestone 10: Extra changes and hardening
+
+- [ ] Replace the hourglass with a fading-over-time torch
 
 ---
 
