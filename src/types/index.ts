@@ -28,3 +28,57 @@ export interface TimeDisplay {
   isLowTime: boolean; // True when less than 10 minutes
   isExpired: boolean; // True when timer has reached zero
 }
+
+// Owlbear Rodeo integration types
+export interface PlayerRole {
+  id: string;
+  name: string;
+  role: 'GM' | 'PLAYER';
+  color: string;
+}
+
+export interface TimerSyncState extends TimerState {
+  id: string;
+  version: number;
+  lastModified: number;
+  lastModifiedBy: string;
+  isLeader: boolean;
+  leaderId?: string;
+  lastSaved?: number;
+  duration: number; // Add missing duration property
+}
+
+export interface TimerSyncEvent {
+  type: 'START' | 'PAUSE' | 'RESET' | 'UPDATE' | 'SYNC' | 'LEADER_CHANGE';
+  timerId: string;
+  payload: any;
+  timestamp: number;
+  userId: string;
+}
+
+export interface LeaderState {
+  isLeader: boolean;
+  leaderId?: string;
+  heartbeatInterval?: ReturnType<typeof setInterval>;
+}
+
+export interface ConnectionState {
+  isConnected: boolean;
+  isReconnecting: boolean;
+  lastConnected: number;
+  reconnectAttempts: number;
+}
+
+// Extension metadata constants
+export const EXTENSION_ID = 'com.github.davrodpin.darktorch';
+
+// Broadcast event constants
+export const TIMER_EVENTS = {
+  START: `${EXTENSION_ID}/timer-start`,
+  PAUSE: `${EXTENSION_ID}/timer-pause`,
+  RESET: `${EXTENSION_ID}/timer-reset`,
+  UPDATE: `${EXTENSION_ID}/timer-update`,
+  SYNC: `${EXTENSION_ID}/timer-sync`,
+  LEADER_HEARTBEAT: `${EXTENSION_ID}/leader-heartbeat`,
+  LEADER_ELECTION: `${EXTENSION_ID}/leader-election`,
+} as const;

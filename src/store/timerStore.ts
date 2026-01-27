@@ -65,17 +65,10 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
 // Selectors for optimized re-renders
 export const useTimerRemaining = () => useTimerStore(state => state.remaining);
 export const useTimerIsRunning = () => useTimerStore(state => state.isRunning);
-export const useTimerSoundEnabled = () => useTimerStore(state => state.soundEnabled);
-export const useTimerIsCompleted = () => useTimerStore(state => state.isCompleted);
-export const useTimerIncrementAmount = () => useTimerStore(state => state.incrementAmount);
-export const useTimerActions = () =>
-  useTimerStore(state => ({
-    start: state.start,
-    pause: state.pause,
-    reset: state.reset,
-    setTime: state.setTime,
-    complete: state.complete,
-    toggleSound: state.toggleSound,
-    setSoundEnabled: state.setSoundEnabled,
-    setIncrementAmount: state.setIncrementAmount,
-  }));
+export const useTimerSoundEnabled = () =>
+  useTimerStore(state => state.soundEnabled);
+export const useTimerIsCompleted = () =>
+  useTimerStore(state => state.isCompleted);
+export const useTimerIncrementAmount = () =>
+  useTimerStore(state => state.incrementAmount);
+export const useTimerActions = () => useTimerStore(state => state);

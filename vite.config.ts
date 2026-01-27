@@ -6,10 +6,14 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true,
+    port: 5174,
     cors: {
-      origin: "https://www.owlbear.rodeo",
-    },
-    host: true
+      origin: "*",
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      credentials: true
+    }
   },
   resolve: {
     alias: {

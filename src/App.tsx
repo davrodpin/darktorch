@@ -1,11 +1,18 @@
-import { useEffect } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
-import { TimerDisplay } from './components/TimerDisplay';
+import { useEffect } from 'react';
 import { TimerControls } from './components/TimerControls';
+import { TimerDisplay } from './components/TimerDisplay';
+import { TimerErrorBoundary } from './components/TimerErrorBoundary';
+import { useLeaderElection } from './hooks/useLeaderElection';
+import { useOwlbearSDK } from './hooks/useOwlbearSDK';
+import { usePlayerRole } from './hooks/usePlayerRole';
 import { useTimer } from './hooks/useTimer';
+import { useTimerSync } from './hooks/useTimerSync';
+import contextMenuService from './services/contextMenu';
+import statePersistenceService from './services/statePersistence';
 
 const darkTheme = createTheme({
   palette: {
@@ -53,76 +60,102 @@ const darkTheme = createTheme({
 });
 
 function App() {
-  // Initialize timer hook for countdown logic
+  // Initialize all hooks and services
   useTimer();
+  const { isReady } = useOwlbearSDK();
+  const { player, isGM } = usePlayerRole();
+  const { leaderState } = useLeaderElection();
+  const { connectionStatus } = useTimerSync();
 
   useEffect(() => {
-    // Initialize Owlbear Rodeo SDK when component mounts
-    const initOwlbear = async () => {
-      try {
-        const OBR = (await import('@owlbear-rodeo/sdk')).default;
+    // Initialize services when SDK is ready
+    const initializeServices = async () => {
+      if (!isReady) return;
 
-        // Check if we're in Owlbear Rodeo environment
-        if (typeof OBR !== 'undefined') {
-          console.log('Dark Torch initialized in Owlbear Rodeo');
-          // TODO: Set up context menu and other SDK features in Milestone 4
-        }
+      try {
+        // Initialize context menu service
+        await contextMenuService.initialize();
+        
+        // Initialize state persistence service
+        await statePersistenceService.initialize();
+        
+        // Clean up old states
+        await statePersistenceService.cleanupExpiredStates();
       } catch (error) {
-        console.error('Failed to initialize Owlbear Rodeo SDK:', error);
+        console.error('Failed to initialize services:', error);
       }
     };
 
-    initOwlbear();
-  }, []);
+    initializeServices();
+  }, [isReady]);
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'flex-start',
-          minHeight: '100vh',
-          p: 2,
-          backgroundColor: 'background.default',
-          maxWidth: '320px',
-          mx: 'auto',
-        }}
-      >
-        {/* Header */}
-        <Box sx={{ textAlign: 'center', mb: 2, width: '100%' }}>
-          <Typography
-            variant="h5"
-            component="h1"
-            gutterBottom
-            sx={{ fontWeight: 'bold' }}
-          >
-            🔥 Dark Torch
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Shadowdark RPG Timer
-          </Typography>
+      <TimerErrorBoundary>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            minHeight: '100vh',
+            p: 2,
+            backgroundColor: 'background.default',
+            maxWidth: '320px',
+            mx: 'auto',
+          }}
+        >
+          {/* Header with status info */}
+          <Box sx={{ textAlign: 'center', mb: 2, width: '100%' }}>
+            <Typography
+              variant="h5"
+              component="h1"
+              gutterBottom
+              sx={{ fontWeight: 'bold' }}
+            >
+              🔥 Dark Torch
+            </Typography>
+            <Typography variant="caption" color="text.secondary" display="block">
+              Shadowdark RPG Timer
+            </Typography>
+            
+            {/* Connection and status indicators */}
+            {player && (
+              <Typography variant="caption" color="text.secondary" display="block">
+                {isGM ? '👑 Game Master' : '👤 Player'} • 
+                {leaderState.isLeader ? ' 👑 Leader' : ' 👁️ Follower'} • 
+                {connectionStatus.isConnected ? ' 🟢 Online' : ' 🔴 Offline'}
+              </Typography>
+            )}
+          </Box>
+
+          {/* Timer Display */}
+          <TimerDisplay />
+
+          {/* Timer Controls */}
+          <TimerControls />
+
+          {/* Footer with milestone status */}
+          <Box sx={{ mt: 'auto', pt: 2 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              textAlign="center"
+              display="block"
+            >
+              Milestone 4 Complete 🚨
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              textAlign="center"
+            >
+              Multi-user sync & leader election
+            </Typography>
+          </Box>
         </Box>
-
-        {/* Timer Display */}
-        <TimerDisplay />
-
-        {/* Timer Controls */}
-        <TimerControls />
-
-        {/* Footer */}
-        <Box sx={{ mt: 'auto', pt: 2 }}>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            textAlign="center"
-          >
-            Milestone 3 Complete 🚨
-          </Typography>
-        </Box>
-      </Box>
+      </TimerErrorBoundary>
     </ThemeProvider>
   );
 }
