@@ -5,6 +5,8 @@ export interface TimerState {
   soundEnabled: boolean; // Whether sound notifications are enabled
   isCompleted: boolean; // Whether timer has completed
   incrementAmount: number; // Amount in seconds for +/- buttons (default: 300 = 5 min)
+  displayMode: 'number' | 'hourglass'; // Display mode for the timer
+  visibilityMode: 'EVERYONE' | 'GM_ONLY'; // Who can see the timer display
 }
 
 export interface TimerActions {
@@ -16,6 +18,8 @@ export interface TimerActions {
   toggleSound: () => void; // Toggle sound notifications
   setSoundEnabled: (enabled: boolean) => void; // Set sound enabled state
   setIncrementAmount: (seconds: number) => void; // Set increment/decrement amount
+  setDisplayMode: (mode: TimerState['displayMode']) => void; // Set numeric/hourglass display
+  setVisibilityMode: (mode: TimerState['visibilityMode']) => void; // Set who can see the timer
 }
 
 export interface TimerStore extends TimerState, TimerActions {}
@@ -26,6 +30,7 @@ export interface TimeDisplay {
   seconds: number; // Seconds portion
   totalSeconds: number; // Total seconds
   isLowTime: boolean; // True when less than 10 minutes
+  isCriticalTime: boolean; // True when less than 1 minute
   isExpired: boolean; // True when timer has reached zero
 }
 

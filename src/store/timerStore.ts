@@ -11,6 +11,8 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   soundEnabled: true,
   isCompleted: false,
   incrementAmount: 300, // Default 5 minutes
+  displayMode: 'number',
+  visibilityMode: 'EVERYONE',
 
   // Actions
   start: () => {
@@ -60,6 +62,14 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   setIncrementAmount: (seconds: number) => {
     set({ incrementAmount: seconds });
   },
+
+  setDisplayMode: (mode: TimerStore['displayMode']) => {
+    set({ displayMode: mode });
+  },
+
+  setVisibilityMode: (mode: TimerStore['visibilityMode']) => {
+    set({ visibilityMode: mode });
+  },
 }));
 
 // Selectors for optimized re-renders
@@ -71,4 +81,8 @@ export const useTimerIsCompleted = () =>
   useTimerStore(state => state.isCompleted);
 export const useTimerIncrementAmount = () =>
   useTimerStore(state => state.incrementAmount);
+export const useTimerDisplayMode = () =>
+  useTimerStore(state => state.displayMode);
+export const useTimerVisibilityMode = () =>
+  useTimerStore(state => state.visibilityMode);
 export const useTimerActions = () => useTimerStore(state => state);

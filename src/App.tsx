@@ -99,11 +99,14 @@ function App() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            minHeight: '100vh',
+            height: '100vh',
+            overflowY: 'auto',
             p: 2,
             backgroundColor: 'background.default',
+            width: '100%',
             maxWidth: '320px',
             mx: 'auto',
+            boxSizing: 'border-box',
           }}
         >
           {/* Header with status info */}

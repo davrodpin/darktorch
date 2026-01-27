@@ -7,7 +7,7 @@ import { useTimerStore, useTimerActions } from '../store/timerStore';
 import type { TimerSyncEvent, TimerSyncState } from '../types';
 
 export const useTimerSync = () => {
-  const { player } = usePlayerRole();
+  const { player, isGM } = usePlayerRole();
   const { isCurrentPlayerLeader } = useLeaderElection();
   const { isReady, connectionState } = useOwlbearSDK();
   const timerActions = useTimerActions();
@@ -20,6 +20,8 @@ export const useTimerSync = () => {
   const isCompleted = timerState.isCompleted;
   const incrementAmount = timerState.incrementAmount;
   const duration = timerState.duration;
+  const displayMode = timerState.displayMode;
+  const visibilityMode = timerState.visibilityMode;
 
   // Create timer sync state from current timer state
   const createSyncState = useCallback((): TimerSyncState => {
@@ -30,6 +32,8 @@ export const useTimerSync = () => {
       isCompleted,
       incrementAmount,
       duration,
+      displayMode,
+      visibilityMode,
       id: 'default',
       version: Date.now(),
       lastModified: Date.now(),
@@ -44,6 +48,8 @@ export const useTimerSync = () => {
     isCompleted,
     incrementAmount,
     duration,
+    displayMode,
+    visibilityMode,
     player,
     isCurrentPlayerLeader,
   ]);
@@ -73,14 +79,25 @@ export const useTimerSync = () => {
           timerActions.reset();
           break;
 
-        case 'UPDATE':
-          if (event.payload.remaining !== undefined) {
-            timerActions.setTime(event.payload.remaining);
+        case 'UPDATE': {
+          const payload = event.payload as Partial<TimerSyncState>;
+
+          if (payload.remaining !== undefined) {
+            timerActions.setTime(payload.remaining);
+          }
+          if (payload.displayMode !== undefined) {
+            timerActions.setDisplayMode(payload.displayMode);
+          }
+          if (payload.visibilityMode !== undefined) {
+            timerActions.setVisibilityMode(payload.visibilityMode);
           }
           break;
+        }
 
-        case 'SYNC':
-          const payload = event.payload as any;
+        case 'SYNC': {
+          const payload = event.payload as Partial<TimerSyncState> & {
+            requestFullSync?: boolean;
+          };
 
           // Handle full sync request
           if (payload.requestFullSync && isCurrentPlayerLeader()) {
@@ -100,14 +117,23 @@ export const useTimerSync = () => {
               timerActions.pause();
             }
           }
+
+          if (!isCurrentPlayerLeader() && payload.displayMode !== undefined) {
+            timerActions.setDisplayMode(payload.displayMode);
+          }
+
+          if (!isCurrentPlayerLeader() && payload.visibilityMode !== undefined) {
+            timerActions.setVisibilityMode(payload.visibilityMode);
+          }
           break;
+        }
 
         default:
           console.warn('Unknown sync event type:', event.type);
           break;
       }
     },
-    [player, isCurrentPlayerLeader, timerActions, createSyncState]
+    [player, isCurrentPlayerLeader, timerActions, createSyncState, isRunning]
   );
 
   // Initialize sync service
@@ -131,7 +157,7 @@ export const useTimerSync = () => {
     }
 
     return () => unsubscribe();
-  }, [isReady, handleSyncEvent]);
+  }, [isReady, handleSyncEvent, isCurrentPlayerLeader]);
 
   // Enhanced timer actions with sync
   const syncStart = useCallback(() => {
@@ -178,6 +204,48 @@ export const useTimerSync = () => {
     [isCurrentPlayerLeader, timerActions, createSyncState]
   );
 
+  const syncSetDisplayMode = useCallback(
+    (mode: TimerSyncState['displayMode']) => {
+      if (!isGM) {
+        console.warn('Only the Game Master can change display mode');
+        return;
+      }
+
+      timerActions.setDisplayMode(mode);
+
+      const isPlayerLeader = isCurrentPlayerLeader();
+      if (isPlayerLeader) {
+        const syncState = createSyncState();
+        syncState.displayMode = mode;
+        timerSyncService.broadcastTimerUpdate(syncState);
+      } else {
+        console.warn('Only the leader can change display mode');
+      }
+    },
+    [isGM, isCurrentPlayerLeader, timerActions, createSyncState]
+  );
+
+  const syncSetVisibilityMode = useCallback(
+    (mode: TimerSyncState['visibilityMode']) => {
+      if (!isGM) {
+        console.warn('Only the Game Master can change visibility mode');
+        return;
+      }
+
+      timerActions.setVisibilityMode(mode);
+
+      const isPlayerLeader = isCurrentPlayerLeader();
+      if (isPlayerLeader) {
+        const syncState = createSyncState();
+        syncState.visibilityMode = mode;
+        timerSyncService.broadcastTimerUpdate(syncState);
+      } else {
+        console.warn('Only the leader can change visibility mode');
+      }
+    },
+    [isGM, isCurrentPlayerLeader, timerActions, createSyncState]
+  );
+
   // Retry queued messages when connection is restored
   useEffect(() => {
     if (connectionState.isConnected && !connectionState.isReconnecting) {
@@ -202,6 +270,8 @@ export const useTimerSync = () => {
     syncPause,
     syncReset,
     syncSetTime,
+    syncSetDisplayMode,
+    syncSetVisibilityMode,
     isLeader: isCurrentPlayerLeader(),
     connectionStatus: timerSyncService.getConnectionStatus(),
     createSyncState,

@@ -4,6 +4,8 @@ import {
   Button,
   ButtonGroup,
   IconButton,
+  ToggleButton,
+  ToggleButtonGroup,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -14,6 +16,9 @@ import {
   Add,
   Remove,
   HourglassEmpty,
+  Timer,
+  Visibility,
+  VisibilityOff,
 } from '@mui/icons-material';
 import { useTimerStore } from '../store/timerStore';
 import { useTimerIncrementAmount } from '../store/timerStore';
@@ -22,10 +27,20 @@ import { useTimerSync } from '../hooks/useTimerSync';
 import { PermissionWrapper } from './PermissionWrapper';
 
 export const TimerControls: React.FC = () => {
-  const { isRunning, remaining, setIncrementAmount } = useTimerStore();
+  const { isRunning, remaining, setIncrementAmount, displayMode, visibilityMode } =
+    useTimerStore();
   const incrementAmount = useTimerIncrementAmount();
   const { playAdjustmentSound, initAudioOnUserInteraction } = useSoundNotifications();
-  const { syncStart, syncPause, syncReset, syncSetTime, isLeader, connectionStatus } = useTimerSync();
+  const {
+    syncStart,
+    syncPause,
+    syncReset,
+    syncSetTime,
+    syncSetDisplayMode,
+    syncSetVisibilityMode,
+    isLeader,
+    connectionStatus,
+  } = useTimerSync();
 
   const handleStartPause = () => {
     initAudioOnUserInteraction(); // Initialize audio on first interaction
@@ -51,6 +66,24 @@ export const TimerControls: React.FC = () => {
     playAdjustmentSound(true);
   };
 
+  const handleDisplayModeChange = (
+    _event: React.MouseEvent<HTMLElement>,
+    nextMode: 'number' | 'hourglass' | null
+  ) => {
+    if (!nextMode) return;
+    initAudioOnUserInteraction();
+    syncSetDisplayMode(nextMode);
+  };
+
+  const handleVisibilityModeChange = (
+    _event: React.MouseEvent<HTMLElement>,
+    nextMode: 'EVERYONE' | 'GM_ONLY' | null
+  ) => {
+    if (!nextMode) return;
+    initAudioOnUserInteraction();
+    syncSetVisibilityMode(nextMode);
+  };
+
   const isDisabled = remaining === 0 && !isRunning;
 
   return (
@@ -71,6 +104,97 @@ export const TimerControls: React.FC = () => {
           {connectionStatus.isConnected ? '🟢 Connected' : '🔴 Disconnected'}
         </Typography>
       </Box>
+
+      {/* Display + Visibility settings (GM-only, leader-applied) */}
+      <PermissionWrapper requiredRole="GM">
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Tooltip
+            title={
+              isLeader ? 'Display mode' : 'Only the leader can change display mode'
+            }
+            disableHoverListener={isLeader}
+            disableFocusListener={isLeader}
+            disableTouchListener={isLeader}
+          >
+            <span style={{ display: 'inline-flex' }}>
+              <ToggleButtonGroup
+                size="small"
+                value={displayMode}
+                exclusive
+                onChange={handleDisplayModeChange}
+                disabled={!isLeader}
+                aria-label="Display mode"
+              >
+                <ToggleButton value="number" aria-label="Numeric display">
+                  <Tooltip title="Show remaining time as MM:SS." placement="top">
+                    <span style={{ display: 'inline-flex' }}>
+                      <Timer fontSize="small" />
+                    </span>
+                  </Tooltip>
+                </ToggleButton>
+                <ToggleButton value="hourglass" aria-label="Hourglass display">
+                  <Tooltip
+                    title="Show an hourglass animation (no numeric timer)."
+                    placement="top"
+                  >
+                    <span style={{ display: 'inline-flex' }}>
+                      <HourglassEmpty fontSize="small" />
+                    </span>
+                  </Tooltip>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </span>
+          </Tooltip>
+
+          <Tooltip
+            title={
+              isLeader
+                ? 'Visibility mode'
+                : 'Only the leader can change visibility mode'
+            }
+            disableHoverListener={isLeader}
+            disableFocusListener={isLeader}
+            disableTouchListener={isLeader}
+          >
+            <span style={{ display: 'inline-flex' }}>
+              <ToggleButtonGroup
+                size="small"
+                value={visibilityMode}
+                exclusive
+                onChange={handleVisibilityModeChange}
+                disabled={!isLeader}
+                aria-label="Visibility mode"
+              >
+                <ToggleButton value="EVERYONE" aria-label="Everyone can see">
+                  <Tooltip title="Everyone can see the timer." placement="top">
+                    <span style={{ display: 'inline-flex' }}>
+                      <Visibility fontSize="small" />
+                    </span>
+                  </Tooltip>
+                </ToggleButton>
+                <ToggleButton value="GM_ONLY" aria-label="GM only can see">
+                  <Tooltip
+                    title="Only the GM can see the timer. Players see a hidden placeholder."
+                    placement="top"
+                  >
+                    <span style={{ display: 'inline-flex' }}>
+                      <VisibilityOff fontSize="small" />
+                    </span>
+                  </Tooltip>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </span>
+          </Tooltip>
+        </Box>
+      </PermissionWrapper>
 
       {/* Main Control Buttons - Only leaders can control */}
       <PermissionWrapper 

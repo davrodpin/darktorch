@@ -1,11 +1,14 @@
 # Dark Torch - Project Milestones
 
-This document outlines the implementation roadmap for the Dark Torch Owlbear Rodeo extension, breaking down the project into manageable milestones and tasks.
+This document outlines the implementation roadmap for the Dark Torch Owlbear
+Rodeo extension, breaking down the project into manageable milestones and tasks.
 
 ## Milestone 1: Project Bootstrap and Foundation Setup
+
 **Goal**: Establish the basic project structure and development environment.
 
 ### Tasks
+
 - [ ] Initialize Vite + React + TypeScript project
 - [ ] Install core dependencies (@owlbear-rodeo/sdk, @mui/material, zustand)
 - [ ] Configure Vite with CORS settings for Owlbear Rodeo development
@@ -16,14 +19,17 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 - [ ] Generate basic extension icon (128x128 PNG)
 - [ ] Create initial manifest.json with basic configuration
 
-**Deliverables**: Working development environment, basic project structure, installable extension skeleton
+**Deliverables**: Working development environment, basic project structure,
+installable extension skeleton
 
 ---
 
 ## Milestone 2: Core Architecture and Basic UI
+
 **Goal**: Implement the fundamental React components and state management.
 
 ### Tasks
+
 - [ ] Create TypeScript type definitions for timer state
 - [ ] Set up Zustand store for timer state management
 - [ ] Create basic Material-UI theme with dark colors
@@ -33,14 +39,17 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 - [ ] Set up basic extension popup UI
 - [ ] Test extension loading in Owlbear Rodeo
 
-**Deliverables**: Functional timer UI with basic controls, state management working
+**Deliverables**: Functional timer UI with basic controls, state management
+working
 
 ---
 
 ## Milestone 3: Core Timer Functionality
+
 **Goal**: Implement the real-time countdown timer logic.
 
 ### Tasks
+
 - [ ] Create useTimer custom hook for countdown logic
 - [ ] Implement real-time countdown using setInterval
 - [ ] Add timer pause/resume functionality
@@ -55,9 +64,11 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 ---
 
 ## Milestone 4: Owlbear Rodeo Integration
+
 **Goal**: Integrate with Owlbear Rodeo SDK for real-time sync and permissions.
 
 ### Tasks
+
 - [ ] Initialize Owlbear Rodeo SDK connection
 - [ ] Implement role detection (GM vs player)
 - [ ] Create context menu items for timer controls
@@ -72,16 +83,17 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 ---
 
 ## Milestone 5: Display Modes and Visual Features
+
 **Goal**: Implement different display options and visual enhancements.
 
 ### Tasks
+
 - [ ] Implement hourglass display mode (visual representation)
 - [ ] Add display mode toggle (number vs hourglass)
 - [ ] Create smooth animations for timer transitions
 - [ ] Implement visibility modes (GM only vs everyone)
 - [ ] Add visual indicators for timer state (running/paused)
 - [ ] Implement low time warnings (visual indicators)
-- [ ] Add customizable timer colors/themes
 - [ ] Create responsive design for different popup sizes
 
 **Deliverables**: Multiple display modes, enhanced visual feedback
@@ -89,9 +101,11 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 ---
 
 ## Milestone 6: Settings and Configuration
+
 **Goal**: Implement comprehensive settings panel and configuration options.
 
 ### Tasks
+
 - [ ] Create SettingsPanel component
 - [ ] Implement default timer duration setting
 - [ ] Add player permission management
@@ -106,9 +120,11 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 ---
 
 ## Milestone 7: Shadowdark Theme and Polish
+
 **Goal**: Apply Shadowdark-inspired theming and finalize visual design.
 
 ### Tasks
+
 - [ ] Research Shadowdark core book visual style
 - [ ] Design custom Material-UI theme with Shadowdark colors
 - [ ] Create parchment-style background elements
@@ -123,9 +139,11 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 ---
 
 ## Milestone 8: Testing and Quality Assurance
+
 **Goal**: Comprehensive testing and bug fixing.
 
 ### Tasks
+
 - [ ] Write unit tests for timer logic and state management
 - [ ] Test timer accuracy over extended periods
 - [ ] Test multi-user synchronization scenarios
@@ -140,9 +158,11 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 ---
 
 ## Milestone 9: Documentation and Deployment Preparation
+
 **Goal**: Complete documentation and prepare for release.
 
 ### Tasks
+
 - [ ] Write comprehensive README.md with installation guide
 - [ ] Create user manual with screenshots
 - [ ] Document all configuration options
@@ -157,9 +177,11 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 ---
 
 ## Milestone 10: Release and Post-Launch
+
 **Goal**: Deploy extension and establish ongoing maintenance.
 
 ### Tasks
+
 - [ ] Deploy to chosen hosting platform (Render/Vercel)
 - [ ] Submit to Owlbear Rodeo extension store
 - [ ] Set up analytics and error tracking
@@ -171,11 +193,14 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 
 **Deliverables**: Published extension, ongoing support infrastructure
 
+## Milestone 11: Extra changes and hardening
+
 ---
 
 ## Implementation Guidelines
 
 ### Task Dependencies
+
 - Milestone 1 must be completed before any other milestone
 - Milestone 2 should be completed before Milestone 3
 - Milestone 4 requires completion of Milestones 2-3
@@ -186,8 +211,9 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 - Milestone 10 requires completion of Milestone 9
 
 ### Time Estimates
+
 - **Milestone 1**: 2-3 hours
-- **Milestone 2**: 3-4 hours  
+- **Milestone 2**: 3-4 hours
 - **Milestone 3**: 4-5 hours
 - **Milestone 4**: 5-6 hours
 - **Milestone 5**: 4-5 hours
@@ -200,7 +226,9 @@ This document outlines the implementation roadmap for the Dark Torch Owlbear Rod
 **Total Estimated Time**: 32-43 hours
 
 ### Success Criteria
+
 Each milestone should be considered complete when:
+
 1. All tasks in the milestone are finished
 2. The feature works as described in original AGENT.md
 3. Code follows to established conventions and is well-documented
@@ -208,6 +236,7 @@ Each milestone should be considered complete when:
 5. The milestone deliverables are ready for the next phase
 
 ### Risk Mitigation
+
 - **Technical Complexity**: Start with simpler implementations and iterate
 - **Owlbear Rodeo API Changes**: Keep SDK updated, monitor for breaking changes
 - **Time Management**: Focus on core features first, nice-to-haves later
@@ -215,4 +244,5 @@ Each milestone should be considered complete when:
 
 ---
 
-*This milestone document should be updated as the project evolves and new requirements are discovered.*
+_This milestone document should be updated as the project evolves and new
+requirements are discovered._
