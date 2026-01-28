@@ -2,7 +2,7 @@
 title: Dark Torch
 description: Real-time Shadowdark torch timer for Owlbear Rodeo.
 author: David Pinheiro
-image: https://raw.githubusercontent.com/davrodpin/darktorch/refs/heads/main/images/darktorch.1.png
+image: https://davrodpin.github.io/darktorch/images/darktorch.1.png
 icon: https://davrodpin.github.io/darktorch/icon.png
 tags:
   - shadowdark
