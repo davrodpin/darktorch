@@ -70,20 +70,12 @@ export const TimerControls: React.FC = () => {
     playAdjustmentSound(true);
   };
 
-  const handleDisplayModeChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    nextMode: 'number' | 'hourglass' | null
-  ) => {
-    if (!nextMode) return;
+  const handleDisplayModeChange = (nextMode: 'number' | 'hourglass') => {
     initAudioOnUserInteraction();
     syncSetDisplayMode(nextMode);
   };
 
-  const handleVisibilityModeChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    nextMode: 'EVERYONE' | 'GM_ONLY' | null
-  ) => {
-    if (!nextMode) return;
+  const handleVisibilityModeChange = (nextMode: 'EVERYONE' | 'GM_ONLY') => {
     initAudioOnUserInteraction();
     syncSetVisibilityMode(nextMode);
   };
@@ -221,7 +213,7 @@ export const TimerControls: React.FC = () => {
             ariaLabel="Display mode"
             value={displayMode}
             disabled={!isLeader}
-            onChange={(nextMode) => syncSetDisplayMode(nextMode)}
+            onChange={handleDisplayModeChange}
             options={[
               {
                 value: 'hourglass',
@@ -253,7 +245,7 @@ export const TimerControls: React.FC = () => {
                 ariaLabel="Visibility mode"
                 value={visibilityMode}
                 disabled={!isLeader}
-                onChange={(nextMode) => syncSetVisibilityMode(nextMode)}
+                onChange={handleVisibilityModeChange}
                 options={[
                   {
                     value: 'EVERYONE',

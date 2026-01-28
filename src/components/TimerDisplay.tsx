@@ -20,7 +20,6 @@ export const TimerDisplay: React.FC = () => {
   const { isGM } = usePlayerRole();
   const { isLeader, syncPause, syncSetTime } = useTimerSync();
   const timeDisplay = createTimeDisplay(remaining, isCompleted);
-  const progress = duration > 0 ? (remaining / duration) * 100 : 0;
   const [showPulse, setShowPulse] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editMinutes, setEditMinutes] = useState('');
