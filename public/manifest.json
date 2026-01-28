@@ -5,7 +5,7 @@
   "manifest_version": 1,
   "action": {
     "title": "Dark Torch",
-    "icon": "/icon.png",
+    "icon": "/icon.svg",
     "popover": "/",
     "width": 320,
     "height": 440
