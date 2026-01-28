@@ -34,4 +34,5 @@ Check the official
 [Owlbear Rodeo Extension Guide](https://extensions.owlbear.rodeo/guide) to know
 how to install the extension.
 
-The Dark Torch install link is: https://something
+The Dark Torch install link is:
+https://davrodpin.github.io/darktorch/manifest.json
