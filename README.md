@@ -1,11 +1,16 @@
 # Dark Torch
 
-A lightweight extension for the virtual tabletop platform
+Bring the light source mechanic from the
+[Shadowdark RPG](https://www.thearcanelibrary.com/collections/shadowdark-rpg/products/shadowdark-rpg)
+to your online game!
+
+Dark Torch allows you to easily track real-world torch or light source durations
+at the table, seamlessly bringing Shadowdark’s one-hour torch mechanic to your
+online game.
+
+This is a lightweight extension for the virtual tabletop platform
 [Owlbear Rodeo](https://www.owlbear.rodeo/), designed specifically for
-[Shadowdark](https://www.thearcanelibrary.com/collections/shadowdark-rpg/products/shadowdark-rpg)
-RPG adventures. Dark Torch allows you to easily track real-world torch or light
-source durations at the table, seamlessly bringing Shadowdark’s one-hour torch
-mechanic to your online game.
+Shadowdark RPG adventures.
 
 ## Features
 
@@ -25,7 +30,7 @@ mechanic to your online game.
 
 ## How to install
 
-Use the official
+Check the official
 [Owlbear Rodeo Extension Guide](https://extensions.owlbear.rodeo/guide) to know
 how to install the extension.
 
