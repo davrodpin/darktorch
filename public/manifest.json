@@ -2,6 +2,8 @@
   "name": "Dark Torch",
   "description": "Real-time torch timer for Shadowdark RPG",
   "version": "0.0.3",
+  "author": "David Pinheiro <davrodpin@gmail.com>",
+  "homepage_url": "https://github.com/davrodpin/darktorch",
   "manifest_version": 1,
   "action": {
     "title": "Dark Torch",
