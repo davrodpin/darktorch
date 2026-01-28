@@ -123,6 +123,18 @@ jobs:
           git push origin HEAD
           git push origin "$TAG"
 
+      - name: Create GitHub Release
+        if: ${{ inputs.deploy }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          release_name: Release ${{ steps.version.outputs.tag }}
+          body: ""
+          draft: false
+          prerelease: false
+
       - name: Build for GitHub Pages
         if: ${{ inputs.deploy }}
         run: npm run build -- --base=/${{ github.event.repository.name }}/
