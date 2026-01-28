@@ -29,6 +29,9 @@ dist-ssr
 # Vite cache
 .vite/
 
+# Coverage output
+coverage/
+
 # Environment variables
 .env
 .env.local

@@ -152,6 +152,7 @@ working
 - [ ] Create deployment scripts/CI configuration
 - [ ] Set up versioning and release process
 - [ ] Prepare support documentation and contact info
+- [ ] Create a landing page for advertisement focusing on product and features.
 
 **Deliverables**: Complete documentation, deployment-ready build
 
@@ -163,7 +164,8 @@ working
 
 ### Tasks
 
-- [ ] Deploy to chosen hosting platform (Render/Vercel)
+- [ ] Deploy to chosen hosting platform (Github Pages)
+- [ ] Generate a landing page for extension advertisement
 - [ ] Submit to Owlbear Rodeo extension store
 - [ ] Set up analytics and error tracking
 - [ ] Create issue templates for bug reports
