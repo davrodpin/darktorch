@@ -1,73 +1,32 @@
-# React + TypeScript + Vite
+# Dark Torch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A lightweight extension for the virtual tabletop platform
+[Owlbear Rodeo](https://www.owlbear.rodeo/), designed specifically for
+[Shadowdark](https://www.thearcanelibrary.com/collections/shadowdark-rpg/products/shadowdark-rpg)
+RPG adventures. Dark Torch allows you to easily track real-world torch or light
+source durations at the table, seamlessly bringing Shadowdark’s one-hour torch
+mechanic to your online game.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Real-time torch countdown:** Timer defaults to one hour, matching Shadowdark
+  torch durations.
+- **Pause and resume:** The timer can be paused and resumed at any point.
+- **Adjust timer:** Modify the remaining time manually, to account for in-game
+  changes.
+- **Visibility options:** Timer display can be limited to GM only or shown to
+  all players.
+- **Display modes:** Choose between standard numeric countdown or a thematic
+  hourglass visualization.
+- **Permission controls:** By default, only the GM can manage the torch timer,
+  but this can be configured to allow players.
+- **Shadowdark-inspired style:** UI mimics the look and feel of the Shadowdark
+  core book.
 
-## React Compiler
+## How to install
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Use the official
+[Owlbear Rodeo Extension Guide](https://extensions.owlbear.rodeo/guide) to know
+how to install the extension.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The Dark Torch install link is: https://something

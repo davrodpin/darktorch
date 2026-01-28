@@ -1,8 +1,8 @@
-import React from 'react';
-import { act, cleanup, render } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { useTimerStore } from '../store/timerStore';
-import { useTimer } from './useTimer';
+import { act, cleanup, render } from "@testing-library/react";
+import React from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { useTimerStore } from "../store/timerStore";
+import { useTimer } from "./useTimer";
 
 const DEFAULT_DURATION = 3600;
 
@@ -14,8 +14,8 @@ function resetStore() {
     soundEnabled: true,
     isCompleted: false,
     incrementAmount: 300,
-    displayMode: 'hourglass',
-    visibilityMode: 'EVERYONE',
+    displayMode: "hourglass",
+    visibilityMode: "EVERYONE",
   });
 }
 
@@ -24,7 +24,7 @@ function TestHarness() {
   return null;
 }
 
-describe('useTimer', () => {
+describe("useTimer", () => {
   beforeEach(() => {
     resetStore();
     vi.useFakeTimers();
@@ -37,8 +37,12 @@ describe('useTimer', () => {
     vi.useRealTimers();
   });
 
-  it('decrements remaining by 1 each second while running', () => {
-    useTimerStore.setState({ remaining: 3, isRunning: true, isCompleted: false });
+  it("decrements remaining by 1 each second while running", () => {
+    useTimerStore.setState({
+      remaining: 3,
+      isRunning: true,
+      isCompleted: false,
+    });
     const view = render(React.createElement(TestHarness));
 
     act(() => {
@@ -61,7 +65,7 @@ describe('useTimer', () => {
     view.unmount();
   });
 
-  it('stops decrementing when paused', () => {
+  it("stops decrementing when paused", () => {
     useTimerStore.setState({ remaining: 3, isRunning: true });
     const view = render(React.createElement(TestHarness));
 
@@ -81,7 +85,7 @@ describe('useTimer', () => {
     view.unmount();
   });
 
-  it('cleans up interval on unmount', () => {
+  it("cleans up interval on unmount", () => {
     useTimerStore.setState({ remaining: 3, isRunning: true });
     const view = render(React.createElement(TestHarness));
 
@@ -94,4 +98,3 @@ describe('useTimer', () => {
     expect(useTimerStore.getState().remaining).toBe(3);
   });
 });
-

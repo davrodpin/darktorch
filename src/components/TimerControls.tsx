@@ -1,32 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
 import {
-  Box,
-  Alert,
-  AlertTitle,
-  Button,
-  IconButton,
-  Tooltip,
-  Typography,
-  Divider,
-} from '@mui/material';
-import {
-  PlayArrow,
-  Pause,
-  Refresh,
-  Add,
-  Remove,
-  HourglassEmpty,
-  Timer,
-  Visibility,
-  VisibilityOff,
+    Add,
+    HourglassEmpty,
+    Pause,
+    PlayArrow,
+    Refresh,
+    Remove,
+    Timer,
+    Visibility,
+    VisibilityOff,
 } from '@mui/icons-material';
+import {
+    Alert,
+    AlertTitle,
+    Box,
+    Button,
+    Divider,
+    IconButton,
+    Tooltip
+} from '@mui/material';
 import OBR from '@owlbear-rodeo/sdk';
-import { useTimerStore } from '../store/timerStore';
-import { useTimerIncrementAmount } from '../store/timerStore';
-import { useSoundNotifications } from '../hooks/useSoundNotifications';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLeaderElection } from '../hooks/useLeaderElection';
 import { useOwlbearSDK } from '../hooks/useOwlbearSDK';
+import { useSoundNotifications } from '../hooks/useSoundNotifications';
 import { useTimerSync } from '../hooks/useTimerSync';
+import { useTimerIncrementAmount, useTimerStore } from '../store/timerStore';
 import { PermissionWrapper } from './PermissionWrapper';
 import { TwoIconToggleGroup } from './TwoIconToggleGroup';
 

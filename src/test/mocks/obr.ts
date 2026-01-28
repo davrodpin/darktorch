@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 type BroadcastHandler = (event: any) => void;
 
@@ -8,7 +8,7 @@ type OBRMock = {
   player: {
     getId: () => Promise<string>;
     getName: () => Promise<string>;
-    getRole: () => Promise<'GM' | 'PLAYER'>;
+    getRole: () => Promise<"GM" | "PLAYER">;
     getColor: () => Promise<string>;
     onChange: (cb: () => void) => () => void;
   };
@@ -24,7 +24,10 @@ type OBRMock = {
     items: {
       onChange: (cb: () => void) => () => void;
       getItems: (ids?: string[]) => Promise<any[]>;
-      updateItems: (items: any[], updater: (item: any) => void) => Promise<void>;
+      updateItems: (
+        items: any[],
+        updater: (item: any) => void,
+      ) => Promise<void>;
     };
   };
   contextMenu: {
@@ -41,7 +44,7 @@ function deliverBroadcast(event: string, data: any) {
     handler({
       data,
       timestamp: Date.now(),
-      userId: 'test-player',
+      userId: "test-player",
     });
   }
 }
@@ -53,10 +56,10 @@ export const OBR_MOCK: OBRMock = {
     cb();
   },
   player: {
-    getId: vi.fn(async () => 'test-player'),
-    getName: vi.fn(async () => 'Test Player'),
-    getRole: vi.fn(async () => 'GM'),
-    getColor: vi.fn(async () => '#ffffff'),
+    getId: vi.fn(async () => "test-player"),
+    getName: vi.fn(async () => "Test Player"),
+    getRole: vi.fn(async () => "GM"),
+    getColor: vi.fn(async () => "#ffffff"),
     onChange: vi.fn(() => () => {}),
   },
   broadcast: {
@@ -64,7 +67,9 @@ export const OBR_MOCK: OBRMock = {
       deliverBroadcast(event, data);
     }),
     onMessage: vi.fn((event: string, cb: BroadcastHandler) => {
-      if (!broadcastHandlers.has(event)) broadcastHandlers.set(event, new Set());
+      if (!broadcastHandlers.has(event)) {
+        broadcastHandlers.set(event, new Set());
+      }
       broadcastHandlers.get(event)!.add(cb);
     }),
   },
@@ -92,25 +97,31 @@ export function resetOBRMock() {
   broadcastHandlers.clear();
 
   OBR_MOCK.player.getId.mockReset();
-  OBR_MOCK.player.getId.mockResolvedValue('test-player');
+  OBR_MOCK.player.getId.mockResolvedValue("test-player");
   OBR_MOCK.player.getName.mockReset();
-  OBR_MOCK.player.getName.mockResolvedValue('Test Player');
+  OBR_MOCK.player.getName.mockResolvedValue("Test Player");
   OBR_MOCK.player.getRole.mockReset();
-  OBR_MOCK.player.getRole.mockResolvedValue('GM');
+  OBR_MOCK.player.getRole.mockResolvedValue("GM");
   OBR_MOCK.player.getColor.mockReset();
-  OBR_MOCK.player.getColor.mockResolvedValue('#ffffff');
+  OBR_MOCK.player.getColor.mockResolvedValue("#ffffff");
   OBR_MOCK.player.onChange.mockReset();
   OBR_MOCK.player.onChange.mockReturnValue(() => {});
 
   OBR_MOCK.broadcast.sendMessage.mockReset();
-  OBR_MOCK.broadcast.sendMessage.mockImplementation(async (event: string, data: any) => {
-    deliverBroadcast(event, data);
-  });
+  OBR_MOCK.broadcast.sendMessage.mockImplementation(
+    async (event: string, data: any) => {
+      deliverBroadcast(event, data);
+    },
+  );
   OBR_MOCK.broadcast.onMessage.mockReset();
-  OBR_MOCK.broadcast.onMessage.mockImplementation((event: string, cb: BroadcastHandler) => {
-    if (!broadcastHandlers.has(event)) broadcastHandlers.set(event, new Set());
-    broadcastHandlers.get(event)!.add(cb);
-  });
+  OBR_MOCK.broadcast.onMessage.mockImplementation(
+    (event: string, cb: BroadcastHandler) => {
+      if (!broadcastHandlers.has(event)) {
+        broadcastHandlers.set(event, new Set());
+      }
+      broadcastHandlers.get(event)!.add(cb);
+    },
+  );
 
   OBR_MOCK.scene.isReady.mockReset();
   OBR_MOCK.scene.isReady.mockResolvedValue(true);
@@ -125,9 +136,11 @@ export function resetOBRMock() {
   OBR_MOCK.scene.items.getItems.mockReset();
   OBR_MOCK.scene.items.getItems.mockResolvedValue([]);
   OBR_MOCK.scene.items.updateItems.mockReset();
-  OBR_MOCK.scene.items.updateItems.mockImplementation(async (items: any[], updater: (item: any) => void) => {
-    for (const item of items) updater(item);
-  });
+  OBR_MOCK.scene.items.updateItems.mockImplementation(
+    async (items: any[], updater: (item: any) => void) => {
+      for (const item of items) updater(item);
+    },
+  );
 
   OBR_MOCK.contextMenu.create.mockReset();
 }
@@ -146,4 +159,3 @@ export function setWindowOBRReady(isReady: boolean) {
     },
   };
 }
-

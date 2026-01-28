@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import type { TimerStore } from '../types';
+import { create } from "zustand";
+import type { TimerStore } from "../types";
 
 const DEFAULT_DURATION = 3600; // 60 minutes in seconds
 
@@ -11,8 +11,8 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   soundEnabled: true,
   isCompleted: false,
   incrementAmount: 300, // Default 5 minutes
-  displayMode: 'hourglass',
-  visibilityMode: 'EVERYONE',
+  displayMode: "hourglass",
+  visibilityMode: "EVERYONE",
 
   // Actions
   start: () => {
@@ -63,26 +63,28 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
     set({ incrementAmount: seconds });
   },
 
-  setDisplayMode: (mode: TimerStore['displayMode']) => {
+  setDisplayMode: (mode: TimerStore["displayMode"]) => {
     set({ displayMode: mode });
   },
 
-  setVisibilityMode: (mode: TimerStore['visibilityMode']) => {
+  setVisibilityMode: (mode: TimerStore["visibilityMode"]) => {
     set({ visibilityMode: mode });
   },
 }));
 
 // Selectors for optimized re-renders
-export const useTimerRemaining = () => useTimerStore(state => state.remaining);
-export const useTimerIsRunning = () => useTimerStore(state => state.isRunning);
+export const useTimerRemaining = () =>
+  useTimerStore((state) => state.remaining);
+export const useTimerIsRunning = () =>
+  useTimerStore((state) => state.isRunning);
 export const useTimerSoundEnabled = () =>
-  useTimerStore(state => state.soundEnabled);
+  useTimerStore((state) => state.soundEnabled);
 export const useTimerIsCompleted = () =>
-  useTimerStore(state => state.isCompleted);
+  useTimerStore((state) => state.isCompleted);
 export const useTimerIncrementAmount = () =>
-  useTimerStore(state => state.incrementAmount);
+  useTimerStore((state) => state.incrementAmount);
 export const useTimerDisplayMode = () =>
-  useTimerStore(state => state.displayMode);
+  useTimerStore((state) => state.displayMode);
 export const useTimerVisibilityMode = () =>
-  useTimerStore(state => state.visibilityMode);
-export const useTimerActions = () => useTimerStore(state => state);
+  useTimerStore((state) => state.visibilityMode);
+export const useTimerActions = () => useTimerStore((state) => state);

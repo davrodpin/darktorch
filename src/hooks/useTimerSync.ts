@@ -1,10 +1,10 @@
-import { useEffect, useCallback } from 'react';
-import { usePlayerRole } from './usePlayerRole';
-import { useLeaderElection } from './useLeaderElection';
-import { useOwlbearSDK } from './useOwlbearSDK';
-import timerSyncService from '../services/timerSync';
-import { useTimerStore, useTimerActions } from '../store/timerStore';
-import type { TimerSyncEvent, TimerSyncState } from '../types';
+import { useCallback, useEffect } from "react";
+import timerSyncService from "../services/timerSync";
+import { useTimerActions, useTimerStore } from "../store/timerStore";
+import type { TimerSyncEvent, TimerSyncState } from "../types";
+import { useLeaderElection } from "./useLeaderElection";
+import { useOwlbearSDK } from "./useOwlbearSDK";
+import { usePlayerRole } from "./usePlayerRole";
 
 export const useTimerSync = () => {
   const { player, isGM } = usePlayerRole();
@@ -34,10 +34,10 @@ export const useTimerSync = () => {
       duration,
       displayMode,
       visibilityMode,
-      id: 'default',
+      id: "default",
       version: Date.now(),
       lastModified: Date.now(),
-      lastModifiedBy: player?.id || 'unknown',
+      lastModifiedBy: player?.id || "unknown",
       isLeader: isCurrentPlayerLeader(),
       leaderId: isCurrentPlayerLeader() ? player?.id : undefined,
     };
@@ -62,24 +62,24 @@ export const useTimerSync = () => {
       }
 
       // Limited logging for sync events
-      if (event.type === 'SYNC') {
+      if (event.type === "SYNC") {
         console.log(`Timer sync requested from ${event.userId}`);
       }
 
       switch (event.type) {
-        case 'START':
+        case "START":
           timerActions.start();
           break;
 
-        case 'PAUSE':
+        case "PAUSE":
           timerActions.pause();
           break;
 
-        case 'RESET':
+        case "RESET":
           timerActions.reset();
           break;
 
-        case 'UPDATE': {
+        case "UPDATE": {
           const payload = event.payload as Partial<TimerSyncState>;
 
           if (payload.remaining !== undefined) {
@@ -94,7 +94,7 @@ export const useTimerSync = () => {
           break;
         }
 
-        case 'SYNC': {
+        case "SYNC": {
           const payload = event.payload as Partial<TimerSyncState> & {
             requestFullSync?: boolean;
           };
@@ -122,18 +122,20 @@ export const useTimerSync = () => {
             timerActions.setDisplayMode(payload.displayMode);
           }
 
-          if (!isCurrentPlayerLeader() && payload.visibilityMode !== undefined) {
+          if (
+            !isCurrentPlayerLeader() && payload.visibilityMode !== undefined
+          ) {
             timerActions.setVisibilityMode(payload.visibilityMode);
           }
           break;
         }
 
         default:
-          console.warn('Unknown sync event type:', event.type);
+          console.warn("Unknown sync event type:", event.type);
           break;
       }
     },
-    [player, isCurrentPlayerLeader, timerActions, createSyncState, isRunning]
+    [player, isCurrentPlayerLeader, timerActions, createSyncState, isRunning],
   );
 
   // Initialize sync service
@@ -166,7 +168,7 @@ export const useTimerSync = () => {
       timerActions.start();
       timerSyncService.broadcastTimerStart(createSyncState());
     } else {
-      console.warn('Only the leader can start the timer');
+      console.warn("Only the leader can start the timer");
     }
   }, [isCurrentPlayerLeader, timerActions, createSyncState]);
 
@@ -176,7 +178,7 @@ export const useTimerSync = () => {
       timerActions.pause();
       timerSyncService.broadcastTimerPause(createSyncState());
     } else {
-      console.warn('Only the leader can pause the timer');
+      console.warn("Only the leader can pause the timer");
     }
   }, [isCurrentPlayerLeader, timerActions, createSyncState]);
 
@@ -186,7 +188,7 @@ export const useTimerSync = () => {
       timerActions.reset();
       timerSyncService.broadcastTimerReset(createSyncState());
     } else {
-      console.warn('Only the leader can reset the timer');
+      console.warn("Only the leader can reset the timer");
     }
   }, [isCurrentPlayerLeader, timerActions, createSyncState]);
 
@@ -201,13 +203,13 @@ export const useTimerSync = () => {
         timerSyncService.broadcastTimerUpdate(syncState);
       }
     },
-    [isCurrentPlayerLeader, timerActions, createSyncState]
+    [isCurrentPlayerLeader, timerActions, createSyncState],
   );
 
   const syncSetDisplayMode = useCallback(
-    (mode: TimerSyncState['displayMode']) => {
+    (mode: TimerSyncState["displayMode"]) => {
       if (!isGM) {
-        console.warn('Only the Game Master can change display mode');
+        console.warn("Only the Game Master can change display mode");
         return;
       }
 
@@ -219,16 +221,16 @@ export const useTimerSync = () => {
         syncState.displayMode = mode;
         timerSyncService.broadcastTimerUpdate(syncState);
       } else {
-        console.warn('Only the leader can change display mode');
+        console.warn("Only the leader can change display mode");
       }
     },
-    [isGM, isCurrentPlayerLeader, timerActions, createSyncState]
+    [isGM, isCurrentPlayerLeader, timerActions, createSyncState],
   );
 
   const syncSetVisibilityMode = useCallback(
-    (mode: TimerSyncState['visibilityMode']) => {
+    (mode: TimerSyncState["visibilityMode"]) => {
       if (!isGM) {
-        console.warn('Only the Game Master can change visibility mode');
+        console.warn("Only the Game Master can change visibility mode");
         return;
       }
 
@@ -240,10 +242,10 @@ export const useTimerSync = () => {
         syncState.visibilityMode = mode;
         timerSyncService.broadcastTimerUpdate(syncState);
       } else {
-        console.warn('Only the leader can change visibility mode');
+        console.warn("Only the leader can change visibility mode");
       }
     },
-    [isGM, isCurrentPlayerLeader, timerActions, createSyncState]
+    [isGM, isCurrentPlayerLeader, timerActions, createSyncState],
   );
 
   // Retry queued messages when connection is restored

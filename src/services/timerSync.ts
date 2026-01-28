@@ -1,10 +1,10 @@
+import OBR from "@owlbear-rodeo/sdk";
 import {
   TIMER_EVENTS,
-  type TimerSyncState,
   type TimerSyncEvent,
-} from '../types';
-import { safeAsyncOperation } from '../utils/errorHandling';
-import OBR from '@owlbear-rodeo/sdk';
+  type TimerSyncState,
+} from "../types";
+import { safeAsyncOperation } from "../utils/errorHandling";
 
 class TimerSyncService {
   private static instance: TimerSyncService;
@@ -56,8 +56,8 @@ class TimerSyncService {
         };
 
         const event: TimerSyncEvent = {
-          type: 'START',
-          timerId: timerState.id || 'default',
+          type: "START",
+          timerId: timerState.id || "default",
           payload,
           timestamp: Date.now(),
           userId: await this.getCurrentUserId(),
@@ -66,7 +66,7 @@ class TimerSyncService {
         await this.broadcastMessage(TIMER_EVENTS.START, event);
       },
       undefined,
-      undefined
+      undefined,
     );
   }
 
@@ -79,8 +79,8 @@ class TimerSyncService {
         };
 
         const event: TimerSyncEvent = {
-          type: 'PAUSE',
-          timerId: timerState.id || 'default',
+          type: "PAUSE",
+          timerId: timerState.id || "default",
           payload,
           timestamp: Date.now(),
           userId: await this.getCurrentUserId(),
@@ -89,7 +89,7 @@ class TimerSyncService {
         await this.broadcastMessage(TIMER_EVENTS.PAUSE, event);
       },
       undefined,
-      undefined
+      undefined,
     );
   }
 
@@ -102,8 +102,8 @@ class TimerSyncService {
         };
 
         const event: TimerSyncEvent = {
-          type: 'RESET',
-          timerId: timerState.id || 'default',
+          type: "RESET",
+          timerId: timerState.id || "default",
           payload,
           timestamp: Date.now(),
           userId: await this.getCurrentUserId(),
@@ -112,7 +112,7 @@ class TimerSyncService {
         await this.broadcastMessage(TIMER_EVENTS.RESET, event);
       },
       undefined,
-      undefined
+      undefined,
     );
   }
 
@@ -125,8 +125,8 @@ class TimerSyncService {
         };
 
         const event: TimerSyncEvent = {
-          type: 'UPDATE',
-          timerId: timerState.id || 'default',
+          type: "UPDATE",
+          timerId: timerState.id || "default",
           payload,
           timestamp: Date.now(),
           userId: await this.getCurrentUserId(),
@@ -135,7 +135,7 @@ class TimerSyncService {
         await this.broadcastMessage(TIMER_EVENTS.UPDATE, event);
       },
       undefined,
-      undefined
+      undefined,
     );
   }
 
@@ -148,7 +148,7 @@ class TimerSyncService {
         };
 
         const event: TimerSyncEvent = {
-          type: 'SYNC',
+          type: "SYNC",
           timerId: timerState.id,
           payload,
           timestamp: Date.now(),
@@ -158,15 +158,15 @@ class TimerSyncService {
         await this.broadcastMessage(TIMER_EVENTS.SYNC, event);
       },
       undefined,
-      undefined
+      undefined,
     );
   }
 
   // Request full sync from current leader
   async requestFullSync() {
     const event: TimerSyncEvent = {
-      type: 'SYNC',
-      timerId: 'default',
+      type: "SYNC",
+      timerId: "default",
       payload: {
         requestFullSync: true,
         timestamp: Date.now(),
@@ -196,7 +196,7 @@ class TimerSyncService {
       if (this.retryAttempts === 0) {
         console.error(
           `Broadcast ${event} failed:`,
-          error instanceof Error ? error.message : String(error)
+          error instanceof Error ? error.message : String(error),
         );
       }
 
@@ -216,7 +216,7 @@ class TimerSyncService {
       // Listen for all timer events
       OBR.broadcast.onMessage(TIMER_EVENTS.START, (event: any) => {
         const syncEvent: TimerSyncEvent = {
-          type: 'START',
+          type: "START",
           timerId: event.data.timerId,
           payload: event.data,
           timestamp: event.timestamp,
@@ -227,7 +227,7 @@ class TimerSyncService {
 
       OBR.broadcast.onMessage(TIMER_EVENTS.PAUSE, (event: any) => {
         const syncEvent: TimerSyncEvent = {
-          type: 'PAUSE',
+          type: "PAUSE",
           timerId: event.data.timerId,
           payload: event.data,
           timestamp: event.timestamp,
@@ -238,7 +238,7 @@ class TimerSyncService {
 
       OBR.broadcast.onMessage(TIMER_EVENTS.RESET, (event: any) => {
         const syncEvent: TimerSyncEvent = {
-          type: 'RESET',
+          type: "RESET",
           timerId: event.data.timerId,
           payload: event.data,
           timestamp: event.timestamp,
@@ -249,7 +249,7 @@ class TimerSyncService {
 
       OBR.broadcast.onMessage(TIMER_EVENTS.UPDATE, (event: any) => {
         const syncEvent: TimerSyncEvent = {
-          type: 'UPDATE',
+          type: "UPDATE",
           timerId: event.data.timerId,
           payload: event.data,
           timestamp: event.timestamp,
@@ -260,7 +260,7 @@ class TimerSyncService {
 
       OBR.broadcast.onMessage(TIMER_EVENTS.SYNC, (event: any) => {
         const syncEvent: TimerSyncEvent = {
-          type: 'SYNC',
+          type: "SYNC",
           timerId: event.data.timerId,
           payload: event.data,
           timestamp: event.timestamp,
@@ -269,13 +269,13 @@ class TimerSyncService {
         this.handleSyncEvent(syncEvent);
       });
     } catch (error) {
-      console.error('Failed to setup sync event listeners:', error);
+      console.error("Failed to setup sync event listeners:", error);
     }
   }
 
   private handleSyncEvent(event: TimerSyncEvent) {
     // Ignore events from ourselves to prevent echo
-    this.getCurrentUserId().then(currentUserId => {
+    this.getCurrentUserId().then((currentUserId) => {
       if (event.userId === currentUserId) {
         return;
       }
@@ -296,7 +296,7 @@ class TimerSyncService {
     }
 
     // For timer control events, only accept from current leader
-    if (['START', 'PAUSE', 'RESET'].includes(event.type)) {
+    if (["START", "PAUSE", "RESET"].includes(event.type)) {
       // This check will be enhanced in the leader integration
       return true;
     }
@@ -305,7 +305,7 @@ class TimerSyncService {
   }
 
   private notifyCallbacks(event: TimerSyncEvent) {
-    this.callbacks.forEach(callback => {
+    this.callbacks.forEach((callback) => {
       try {
         callback(event);
       } catch (error) {
@@ -317,14 +317,14 @@ class TimerSyncService {
   private async getCurrentUserId(): Promise<string> {
     try {
       if (!OBR.isAvailable) {
-        return 'dev-player';
+        return "dev-player";
       }
 
       const player = await OBR.player.getId();
       return player;
     } catch (error) {
       // Failed to get user ID - use fallback
-      return 'unknown';
+      return "unknown";
     }
   }
 
@@ -353,9 +353,9 @@ class TimerSyncService {
         // Exponential backoff with jitter
         const delay = Math.min(
           1000 * Math.pow(2, attempt - 1) + Math.random() * 500,
-          10000
+          10000,
         );
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
 

@@ -5,8 +5,8 @@ export interface TimerState {
   soundEnabled: boolean; // Whether sound notifications are enabled
   isCompleted: boolean; // Whether timer has completed
   incrementAmount: number; // Amount in seconds for +/- buttons (default: 300 = 5 min)
-  displayMode: 'number' | 'hourglass'; // Display mode for the timer
-  visibilityMode: 'EVERYONE' | 'GM_ONLY'; // Who can see the timer display
+  displayMode: "number" | "hourglass"; // Display mode for the timer
+  visibilityMode: "EVERYONE" | "GM_ONLY"; // Who can see the timer display
 }
 
 export interface TimerActions {
@@ -18,8 +18,8 @@ export interface TimerActions {
   toggleSound: () => void; // Toggle sound notifications
   setSoundEnabled: (enabled: boolean) => void; // Set sound enabled state
   setIncrementAmount: (seconds: number) => void; // Set increment/decrement amount
-  setDisplayMode: (mode: TimerState['displayMode']) => void; // Set numeric/hourglass display
-  setVisibilityMode: (mode: TimerState['visibilityMode']) => void; // Set who can see the timer
+  setDisplayMode: (mode: TimerState["displayMode"]) => void; // Set numeric/hourglass display
+  setVisibilityMode: (mode: TimerState["visibilityMode"]) => void; // Set who can see the timer
 }
 
 export interface TimerStore extends TimerState, TimerActions {}
@@ -38,7 +38,7 @@ export interface TimeDisplay {
 export interface PlayerRole {
   id: string;
   name: string;
-  role: 'GM' | 'PLAYER';
+  role: "GM" | "PLAYER";
   color: string;
 }
 
@@ -54,7 +54,7 @@ export interface TimerSyncState extends TimerState {
 }
 
 export interface TimerSyncEvent {
-  type: 'START' | 'PAUSE' | 'RESET' | 'UPDATE' | 'SYNC' | 'LEADER_CHANGE';
+  type: "START" | "PAUSE" | "RESET" | "UPDATE" | "SYNC" | "LEADER_CHANGE";
   timerId: string;
   payload: any;
   timestamp: number;
@@ -75,7 +75,7 @@ export interface ConnectionState {
 }
 
 // Extension metadata constants
-export const EXTENSION_ID = 'com.github.davrodpin.darktorch';
+export const EXTENSION_ID = "com.github.davrodpin.darktorch";
 
 // Broadcast event constants
 export const TIMER_EVENTS = {

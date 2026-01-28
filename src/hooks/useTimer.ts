@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useTimerStore } from '../store/timerStore';
+import { useEffect, useRef } from "react";
+import { useTimerStore } from "../store/timerStore";
 
 /**
  * Custom hook for managing the countdown timer logic
