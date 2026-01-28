@@ -1,7 +1,7 @@
 {
   "name": "Dark Torch",
   "description": "Real-time torch timer for Shadowdark RPG",
-  "version": "0.0.1+alpha",
+  "version": "0.0.1",
   "manifest_version": 1,
   "action": {
     "title": "Dark Torch",
