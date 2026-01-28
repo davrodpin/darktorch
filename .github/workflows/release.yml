@@ -132,7 +132,32 @@ jobs:
         env:
           BASE_PATH: /${{ github.event.repository.name }}
         run: |
-          node -e "const fs=require('fs'); const p='dist/manifest.json'; const base=process.env.BASE_PATH; const j=JSON.parse(fs.readFileSync(p,'utf8')); const prefix=(v)=>{ if (typeof v!=='string' || !v.startsWith('/')) return v; if (v==='/') return `${base}/`; return `${base}${v}`; }; if (j.icon) j.icon=prefix(j.icon); if (j.background_url) j.background_url=prefix(j.background_url); if (j.action){ if (j.action.icon) j.action.icon=prefix(j.action.icon); if (j.action.popover) j.action.popover=prefix(j.action.popover); } fs.writeFileSync(p, JSON.stringify(j, null, 2)+'\n');"
+          # NOTE: This must NOT be `node -e "..."` because the JS template literals (backticks)
+          # would be interpreted by the shell as command substitution, turning e.g.:
+          #   return `${base}/`;
+          # into `return ;` and causing JSON.stringify to drop fields (value becomes undefined).
+          node - <<'NODE'
+          const fs = require("fs");
+
+          const p = "dist/manifest.json";
+          const base = process.env.BASE_PATH;
+          const j = JSON.parse(fs.readFileSync(p, "utf8"));
+
+          const prefix = (v) => {
+            if (typeof v !== "string" || !v.startsWith("/")) return v;
+            if (v === "/") return `${base}/`;
+            return `${base}${v}`;
+          };
+
+          if (j.icon) j.icon = prefix(j.icon);
+          if (j.background_url) j.background_url = prefix(j.background_url);
+          if (j.action) {
+            if (j.action.icon) j.action.icon = prefix(j.action.icon);
+            if (j.action.popover) j.action.popover = prefix(j.action.popover);
+          }
+
+          fs.writeFileSync(p, JSON.stringify(j, null, 2) + "\n");
+          NODE
 
       - name: Upload Pages artifact
         if: ${{ inputs.deploy }}
