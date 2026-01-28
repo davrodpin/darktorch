@@ -1,0 +1,139 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. v1.0.1)"
+        required: true
+        type: string
+      deploy:
+        description: "Deploy this release to GitHub Pages"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Normalize version and tag
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          INPUT="${{ inputs.version }}"
+          NORMALIZED="${INPUT#v}"
+
+          # Very small semver guard: X.Y.Z with optional pre-release/build.
+          if ! [[ "$NORMALIZED" =~ ^[0-9]+\.[0-9]+\.[0-9]+([\-+][0-9A-Za-z\.-]+)?$ ]]; then
+            echo "Invalid version: '$INPUT' (normalized: '$NORMALIZED')" >&2
+            exit 1
+          fi
+
+          TAG="v${NORMALIZED}"
+
+          echo "normalized=$NORMALIZED" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure tag does not already exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+
+          git fetch --tags --force
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "Tag already exists locally: $TAG" >&2
+            exit 1
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo "Tag already exists on origin: $TAG" >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Bump package.json/package-lock.json version
+        run: npm version "${{ steps.version.outputs.normalized }}" --no-git-tag-version
+
+      - name: Bump public/manifest.json version
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.normalized }}
+        run: |
+          node -e "const fs=require('fs'); const p='public/manifest.json'; const v=process.env.RELEASE_VERSION; const j=JSON.parse(fs.readFileSync(p,'utf8')); j.version=v; fs.writeFileSync(p, JSON.stringify(j, null, 2)+'\n');"
+
+      - name: Commit release bump
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add package.json package-lock.json public/manifest.json
+          git commit -m "chore(release): ${TAG}"
+
+      - name: Create annotated tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+          git tag -a "$TAG" -m "$TAG"
+
+      - name: Push commit and tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.version.outputs.tag }}"
+          git push origin HEAD
+          git push origin "$TAG"
+
+      - name: Build for GitHub Pages
+        if: ${{ inputs.deploy }}
+        run: npm run build -- --base=/${{ github.event.repository.name }}/
+
+      - name: Rewrite dist/manifest.json URLs for GitHub Pages
+        if: ${{ inputs.deploy }}
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+        run: |
+          node -e "const fs=require('fs'); const p='dist/manifest.json'; const base=process.env.BASE_PATH; const j=JSON.parse(fs.readFileSync(p,'utf8')); const prefix=(v)=>{ if (typeof v!=='string' || !v.startsWith('/')) return v; if (v==='/') return `${base}/`; return `${base}${v}`; }; if (j.icon) j.icon=prefix(j.icon); if (j.background_url) j.background_url=prefix(j.background_url); if (j.action){ if (j.action.icon) j.action.icon=prefix(j.action.icon); if (j.action.popover) j.action.popover=prefix(j.action.popover); } fs.writeFileSync(p, JSON.stringify(j, null, 2)+'\n');"
+
+      - name: Upload Pages artifact
+        if: ${{ inputs.deploy }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        if: ${{ inputs.deploy }}
+        id: deployment
+        uses: actions/deploy-pages@v4
