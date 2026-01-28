@@ -11,7 +11,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   soundEnabled: true,
   isCompleted: false,
   incrementAmount: 300, // Default 5 minutes
-  displayMode: 'number',
+  displayMode: 'hourglass',
   visibilityMode: 'EVERYONE',
 
   // Actions

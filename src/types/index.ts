@@ -29,8 +29,8 @@ export interface TimeDisplay {
   minutes: number; // Minutes portion
   seconds: number; // Seconds portion
   totalSeconds: number; // Total seconds
-  isLowTime: boolean; // True when less than 10 minutes
-  isCriticalTime: boolean; // True when less than 1 minute
+  isLowTime: boolean; // True when less than 15 minutes
+  isCriticalTime: boolean; // True when less than 5 minutes
   isExpired: boolean; // True when timer has reached zero
 }
 

@@ -220,7 +220,7 @@ User Agent: ${navigator.userAgent}
             gap: 2,
           }}
         >
-          <Alert severity={severity} icon={<ErrorIcon />}>
+          <Alert severity={severity} icon={<ErrorIcon />} sx={{ width: '100%' }}>
             <AlertTitle>Timer Error Occurred</AlertTitle>
             {suggestion}
           </Alert>

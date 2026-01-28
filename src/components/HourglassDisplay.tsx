@@ -26,15 +26,15 @@ export const HourglassDisplay: React.FC<HourglassDisplayProps> = ({
 
   const colors = useMemo(() => {
     if (isCompleted) {
-      return { sand: theme.palette.error.main, glow: 'rgba(244, 67, 54, 0.55)' };
+      return { sand: theme.palette.text.primary, glow: 'rgba(0, 0, 0, 0.25)' };
     }
     if (isCriticalTime) {
-      return { sand: theme.palette.error.light, glow: 'rgba(244, 67, 54, 0.35)' };
+      return { sand: theme.palette.text.primary, glow: 'rgba(0, 0, 0, 0.22)' };
     }
     if (isLowTime) {
-      return { sand: theme.palette.warning.main, glow: 'rgba(255, 152, 0, 0.30)' };
+      return { sand: theme.palette.text.primary, glow: 'rgba(0, 0, 0, 0.18)' };
     }
-    return { sand: theme.palette.primary.main, glow: 'rgba(255, 107, 53, 0.25)' };
+    return { sand: theme.palette.text.primary, glow: 'rgba(0, 0, 0, 0.14)' };
   }, [isCompleted, isCriticalTime, isLowTime, theme.palette]);
 
   // Geometry: viewBox 0..160 x 0..220
@@ -61,7 +61,7 @@ export const HourglassDisplay: React.FC<HourglassDisplayProps> = ({
         width: 160,
         height: 220,
         mx: 'auto',
-        filter: `drop-shadow(0 0 10px ${colors.glow})`,
+        filter: `drop-shadow(0 2px 8px ${colors.glow})`,
       }}
     >
       <svg

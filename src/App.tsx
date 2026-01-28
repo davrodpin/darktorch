@@ -1,71 +1,25 @@
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import { ThemeProvider } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useEffect } from 'react';
 import { TimerControls } from './components/TimerControls';
 import { TimerDisplay } from './components/TimerDisplay';
 import { TimerErrorBoundary } from './components/TimerErrorBoundary';
-import { useLeaderElection } from './hooks/useLeaderElection';
 import { useOwlbearSDK } from './hooks/useOwlbearSDK';
-import { usePlayerRole } from './hooks/usePlayerRole';
 import { useTimer } from './hooks/useTimer';
-import { useTimerSync } from './hooks/useTimerSync';
 import contextMenuService from './services/contextMenu';
 import statePersistenceService from './services/statePersistence';
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#ff6b35',
-    },
-    secondary: {
-      main: '#8b4513',
-    },
-    warning: {
-      main: '#ff9800',
-    },
-    success: {
-      main: '#4caf50',
-    },
-    error: {
-      main: '#f44336',
-    },
-    background: {
-      default: '#1a0f08',
-      paper: '#2c1810',
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        '@keyframes pulse': {
-          '0%': {
-            opacity: 1,
-          },
-          '50%': {
-            opacity: 0.6,
-          },
-          '100%': {
-            opacity: 1,
-          },
-        },
-      },
-    },
-  },
-});
+import { shadowdarkTheme } from './theme/shadowdarkTheme';
 
 function App() {
   // Initialize all hooks and services
   useTimer();
   const { isReady } = useOwlbearSDK();
-  const { player, isGM } = usePlayerRole();
-  const { leaderState } = useLeaderElection();
-  const { connectionStatus } = useTimerSync();
 
   useEffect(() => {
     // Initialize services when SDK is ready
@@ -90,73 +44,113 @@ function App() {
   }, [isReady]);
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={shadowdarkTheme}>
       <CssBaseline />
       <TimerErrorBoundary>
         <Box
           sx={{
+            height: '100%',
+            width: '100%',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            height: '100vh',
-            overflowY: 'auto',
-            p: 2,
-            backgroundColor: 'background.default',
-            width: '100%',
-            maxWidth: '320px',
-            mx: 'auto',
+            alignItems: 'stretch',
+            justifyContent: 'stretch',
+            p: 0,
             boxSizing: 'border-box',
+            bgcolor: 'common.black',
           }}
         >
-          {/* Header with status info */}
-          <Box sx={{ textAlign: 'center', mb: 2, width: '100%' }}>
-            <Typography
-              variant="h5"
-              component="h1"
-              gutterBottom
-              sx={{ fontWeight: 'bold' }}
+          <Paper
+            elevation={0}
+            sx={{
+              width: '100%',
+              maxWidth: '100%',
+              height: '100%',
+              maxHeight: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              p: 0,
+              boxSizing: 'border-box',
+              borderRadius: 0,
+              border: 0,
+            }}
+          >
+            {/* Header with status info */}
+            <Box
+              sx={{
+                backgroundColor: 'common.black',
+                color: 'common.white',
+                py: 1.25,
+                px: 2,
+                position: 'sticky',
+                top: 0,
+                zIndex: 1,
+              }}
             >
-              🔥 Dark Torch
-            </Typography>
-            <Typography variant="caption" color="text.secondary" display="block">
-              Shadowdark RPG Timer
-            </Typography>
-            
-            {/* Connection and status indicators */}
-            {player && (
-              <Typography variant="caption" color="text.secondary" display="block">
-                {isGM ? '👑 Game Master' : '👤 Player'} • 
-                {leaderState.isLeader ? ' 👑 Leader' : ' 👁️ Follower'} • 
-                {connectionStatus.isConnected ? ' 🟢 Online' : ' 🔴 Offline'}
-              </Typography>
-            )}
-          </Box>
+              <Tooltip title="Shadowdark RPG torch timer" arrow placement="bottom">
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  alignItems="center"
+                  justifyContent="center"
+                  sx={{ cursor: 'help' }}
+                >
+                  <LocalFireDepartmentIcon sx={{ color: 'common.white' }} />
+                  <Typography variant="h5" component="h1" sx={{ color: 'common.white' }}>
+                    Dark Torch
+                  </Typography>
+                </Stack>
+              </Tooltip>
+            </Box>
 
-          {/* Timer Display */}
-          <TimerDisplay />
-
-          {/* Timer Controls */}
-          <TimerControls />
-
-          {/* Footer with milestone status */}
-          <Box sx={{ mt: 'auto', pt: 2 }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              textAlign="center"
-              display="block"
+            <Box
+              sx={{
+                flex: 1,
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                px: 2,
+                pt: 1,
+                pb: 0,
+                bgcolor: 'background.paper',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
             >
-              Milestone 4 Complete 🚨
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              textAlign="center"
-            >
-              Multi-user sync & leader election
-            </Typography>
-          </Box>
+              <Box
+                sx={{
+                  minHeight: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {/* Middle area: center the timer display */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    py: 1,
+                  }}
+                >
+                  <TimerDisplay />
+                </Box>
+
+                {/* Bottom area: pin controls to bottom */}
+                <Box
+                  sx={{
+                    position: 'sticky',
+                    bottom: 0,
+                    bgcolor: 'background.paper',
+                    pb: 2,
+                  }}
+                >
+                  <TimerControls />
+                </Box>
+              </Box>
+            </Box>
+          </Paper>
         </Box>
       </TimerErrorBoundary>
     </ThemeProvider>

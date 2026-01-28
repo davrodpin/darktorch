@@ -25,8 +25,8 @@ export const formatTime = (seconds: number): string => {
 export const createTimeDisplay = (seconds: number, isExpired: boolean = false): TimeDisplay => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  const isLowTime = seconds < 600 && seconds > 0; // Less than 10 minutes but not zero
-  const isCriticalTime = seconds < 60 && seconds > 0; // Less than 1 minute but not zero
+  const isLowTime = seconds < 900 && seconds > 0; // Less than 15 minutes but not zero
+  const isCriticalTime = seconds < 300 && seconds > 0; // Less than 5 minutes but not zero
   const isExpiredFinal = isExpired || seconds === 0;
 
   return {
