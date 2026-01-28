@@ -28,6 +28,11 @@ Shadowdark RPG adventures.
 - **Shadowdark-inspired style:** UI mimics the look and feel of the Shadowdark
   core book.
 
+<p align="center">
+  <img src="images/darktorch.1.png" alt="Dark Torch hourglass view" width="45%" />
+  <img src="images/darktorch.2.png" alt="Dark Torch numeric view" width="45%" />
+</p>
+
 ## How to install
 
 Check the official
