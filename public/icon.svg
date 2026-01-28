@@ -1,8 +1,5 @@
 <svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
-  <!-- Black background to match banner -->
-  <rect x="0" y="0" width="128" height="128" rx="24" fill="#000000" />
-
-  <!-- MUI LocalFireDepartment icon (filled), scaled + centered -->
+  <!-- MUI LocalFireDepartment icon (filled), scaled + centered; no background rect so OBR doesn't render a solid square -->
   <g transform="translate(22 22) scale(3.5)">
     <path
       fill="#ffffff"
