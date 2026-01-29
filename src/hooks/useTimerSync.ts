@@ -57,21 +57,32 @@ export const useTimerSync = () => {
   // Handle incoming sync events
   const handleSyncEvent = useCallback(
     (event: TimerSyncEvent): void => {
-      if (!player || event.userId === player.id) {
-        return; // Ignore our own events
-      }
+      // Ignore our own events (when we know our player id), but
+      // do NOT drop events just because the player role hasn't
+      // finished loading yet. Early events (e.g. START) must still
+      // be processed on follower clients.
+      if (player && event.userId === player.id) return;
 
-      // Limited logging for sync events
+      // Limited logging for sync events (only for full-sync requests)
       if (event.type === "SYNC") {
-        console.log(`Timer sync requested from ${event.userId}`);
+        const payload = event.payload as Partial<TimerSyncState> & {
+          requestFullSync?: boolean;
+        };
+        if (payload.requestFullSync) {
+          console.log(
+            `Timer sync requested from ${event.userId ?? "unknown"}`,
+          );
+        }
       }
 
       switch (event.type) {
         case "START":
+          // Leader started the timer – start locally as well.
           timerActions.start();
           break;
 
         case "PAUSE":
+          // Leader paused the timer – pause locally as well.
           timerActions.pause();
           break;
 
@@ -85,9 +96,7 @@ export const useTimerSync = () => {
           if (payload.remaining !== undefined) {
             timerActions.setTime(payload.remaining);
           }
-          if (payload.displayMode !== undefined) {
-            timerActions.setDisplayMode(payload.displayMode);
-          }
+          // Display mode is local-only - ignore incoming displayMode from other clients
           if (payload.visibilityMode !== undefined) {
             timerActions.setVisibilityMode(payload.visibilityMode);
           }
@@ -99,18 +108,22 @@ export const useTimerSync = () => {
             requestFullSync?: boolean;
           };
 
-          // Handle full sync request
+          // Handle full sync request: only the current leader responds by
+          // broadcasting its full state back out.
           if (payload.requestFullSync && isCurrentPlayerLeader()) {
             timerSyncService.broadcastTimerSync(createSyncState());
             return;
           }
 
-          // Handle incoming sync state
-          if (!isCurrentPlayerLeader() && payload.remaining !== undefined) {
+          // For regular SYNC payloads we always treat the incoming state as
+          // authoritative (except when sent by ourselves, which is filtered
+          // earlier). This ensures that GM adjustments using SYNC are applied
+          // even if local leader election disagrees.
+          if (payload.remaining !== undefined) {
             timerActions.setTime(payload.remaining);
           }
 
-          if (!isCurrentPlayerLeader() && payload.isRunning !== undefined) {
+          if (payload.isRunning !== undefined) {
             if (payload.isRunning && !isRunning) {
               timerActions.start();
             } else if (!payload.isRunning && isRunning) {
@@ -118,13 +131,9 @@ export const useTimerSync = () => {
             }
           }
 
-          if (!isCurrentPlayerLeader() && payload.displayMode !== undefined) {
-            timerActions.setDisplayMode(payload.displayMode);
-          }
+          // Display mode is local-only - ignore incoming displayMode from other clients
 
-          if (
-            !isCurrentPlayerLeader() && payload.visibilityMode !== undefined
-          ) {
+          if (payload.visibilityMode !== undefined) {
             timerActions.setVisibilityMode(payload.visibilityMode);
           }
           break;
@@ -194,37 +203,31 @@ export const useTimerSync = () => {
 
   const syncSetTime = useCallback(
     (seconds: number) => {
+      // Always update local store
       timerActions.setTime(seconds);
 
+      // Only GMs or the elected leader should broadcast authoritative time
       const isPlayerLeader = isCurrentPlayerLeader();
-      if (isPlayerLeader) {
-        const syncState = createSyncState();
-        syncState.remaining = seconds;
-        timerSyncService.broadcastTimerUpdate(syncState);
+      if (!isGM && !isPlayerLeader) {
+        return;
       }
+
+      const syncState = createSyncState();
+      syncState.remaining = seconds;
+
+      // Use a full SYNC broadcast so followers immediately adopt the
+      // authoritative state from the GM, just like the heartbeat path.
+      timerSyncService.broadcastTimerSync(syncState);
     },
-    [isCurrentPlayerLeader, timerActions, createSyncState],
+    [isCurrentPlayerLeader, timerActions, createSyncState, isGM],
   );
 
   const syncSetDisplayMode = useCallback(
     (mode: TimerSyncState["displayMode"]) => {
-      if (!isGM) {
-        console.warn("Only the Game Master can change display mode");
-        return;
-      }
-
+      // Display mode is a local preference - update local store only, no broadcast
       timerActions.setDisplayMode(mode);
-
-      const isPlayerLeader = isCurrentPlayerLeader();
-      if (isPlayerLeader) {
-        const syncState = createSyncState();
-        syncState.displayMode = mode;
-        timerSyncService.broadcastTimerUpdate(syncState);
-      } else {
-        console.warn("Only the leader can change display mode");
-      }
     },
-    [isGM, isCurrentPlayerLeader, timerActions, createSyncState],
+    [timerActions],
   );
 
   const syncSetVisibilityMode = useCallback(
@@ -236,16 +239,11 @@ export const useTimerSync = () => {
 
       timerActions.setVisibilityMode(mode);
 
-      const isPlayerLeader = isCurrentPlayerLeader();
-      if (isPlayerLeader) {
-        const syncState = createSyncState();
-        syncState.visibilityMode = mode;
-        timerSyncService.broadcastTimerUpdate(syncState);
-      } else {
-        console.warn("Only the leader can change visibility mode");
-      }
+      const syncState = createSyncState();
+      syncState.visibilityMode = mode;
+      timerSyncService.broadcastTimerUpdate(syncState);
     },
-    [isGM, isCurrentPlayerLeader, timerActions, createSyncState],
+    [isGM, timerActions, createSyncState],
   );
 
   // Retry queued messages when connection is restored

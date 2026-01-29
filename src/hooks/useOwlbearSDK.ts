@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
-import OBR from '@owlbear-rodeo/sdk';
-import type { ConnectionState } from '../types';
+import OBR from "@owlbear-rodeo/sdk";
+import { useCallback, useEffect, useState } from "react";
+import type { ConnectionState } from "../types";
 
 type OwlbearSDKSharedState = {
   isReady: boolean;
@@ -37,15 +37,16 @@ function emitSharedState() {
 function setSharedConnectionState(
   update:
     | Partial<ConnectionState>
-    | ((prev: ConnectionState) => ConnectionState)
+    | ((prev: ConnectionState) => ConnectionState),
 ) {
-  const nextConnectionState =
-    typeof update === 'function' ? update(sharedState.connectionState) : null;
+  const nextConnectionState = typeof update === "function"
+    ? update(sharedState.connectionState)
+    : null;
 
   sharedState = {
     ...sharedState,
-    connectionState:
-      nextConnectionState ?? { ...sharedState.connectionState, ...update },
+    connectionState: nextConnectionState ??
+      { ...sharedState.connectionState, ...update },
   };
   emitSharedState();
 }
@@ -63,7 +64,7 @@ async function runConnectionCheck(): Promise<void> {
     // Light-weight API call that doesn't require scene readiness.
     await OBR.player.getId();
 
-    setSharedConnectionState(prev => {
+    setSharedConnectionState((prev) => {
       if (!prev.isConnected || prev.isReconnecting) {
         return {
           ...prev,
@@ -76,7 +77,7 @@ async function runConnectionCheck(): Promise<void> {
       return { ...prev, lastConnected: Date.now() };
     });
   } catch {
-    setSharedConnectionState(prev => ({
+    setSharedConnectionState((prev) => ({
       ...prev,
       isConnected: false,
       isReconnecting: true,
@@ -117,7 +118,7 @@ async function startMonitoringOnce() {
     const attachSceneListeners = () => {
       if (sceneItemsUnsubscribe) return;
       sceneItemsUnsubscribe = OBR.scene.items.onChange(() => {
-        setSharedConnectionState(prev => ({
+        setSharedConnectionState((prev) => ({
           ...prev,
           lastConnected: Date.now(),
         }));
@@ -132,7 +133,7 @@ async function startMonitoringOnce() {
     };
 
     // Listen for scene ready changes, and only attach item listeners when ready.
-    sceneReadyUnsubscribe = OBR.scene.onReadyChange(ready => {
+    sceneReadyUnsubscribe = OBR.scene.onReadyChange((ready) => {
       if (ready) attachSceneListeners();
       else detachSceneListeners();
     });
@@ -158,14 +159,7 @@ async function startMonitoringOnce() {
 async function ensureInitialized(): Promise<void> {
   if (initPromise) return initPromise;
 
-  initPromise = new Promise<void>(resolve => {
-    // Development / non-embedded mode.
-    if (!OBR.isAvailable) {
-      setSharedReady(true);
-      resolve();
-      return;
-    }
-
+  initPromise = new Promise<void>((resolve) => {
     let resolved = false;
     const resolveOnce = () => {
       if (resolved) return;
@@ -182,7 +176,7 @@ async function ensureInitialized(): Promise<void> {
     OBR.onReady(() => {
       clearTimeout(fallback);
       setSharedReady(true);
-      setSharedConnectionState(prev => ({
+      setSharedConnectionState((prev) => ({
         ...prev,
         isConnected: true,
         lastConnected: Date.now(),

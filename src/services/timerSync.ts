@@ -15,6 +15,8 @@ class TimerSyncService {
   private maxRetries = 3;
   private pendingOperations = new Map<string, any>();
   private isSetup = false;
+  private lastFullSyncRequest = 0;
+  private readonly FULL_SYNC_THROTTLE_MS = 2000; // Don't request full sync more than once per 2 seconds
 
   private constructor() {
     // Don't setup immediately - wait for SDK to be ready
@@ -132,6 +134,16 @@ class TimerSyncService {
           userId: await this.getCurrentUserId(),
         };
 
+        if (import.meta.env.DEV) {
+          console.debug("[DarkTorch][broadcastTimerUpdate]", {
+            timerId: event.timerId,
+            userId: event.userId,
+            remaining: (payload as TimerSyncState).remaining,
+            displayMode: (payload as TimerSyncState).displayMode,
+            visibilityMode: (payload as TimerSyncState).visibilityMode,
+          });
+        }
+
         await this.broadcastMessage(TIMER_EVENTS.UPDATE, event);
       },
       undefined,
@@ -164,18 +176,49 @@ class TimerSyncService {
 
   // Request full sync from current leader
   async requestFullSync() {
+    const now = Date.now();
+    if (now - this.lastFullSyncRequest < this.FULL_SYNC_THROTTLE_MS) {
+      if (import.meta.env.DEV) {
+        console.debug(
+          `[DarkTorch][requestFullSync] Throttled (last request ${
+            now - this.lastFullSyncRequest
+          }ms ago)`,
+        );
+      }
+      return;
+    }
+    this.lastFullSyncRequest = now;
+
     const event: TimerSyncEvent = {
       type: "SYNC",
       timerId: "default",
       payload: {
         requestFullSync: true,
-        timestamp: Date.now(),
+        timestamp: now,
       },
-      timestamp: Date.now(),
+      timestamp: now,
       userId: await this.getCurrentUserId(),
     };
 
     await this.broadcastMessage(TIMER_EVENTS.SYNC, event);
+  }
+
+  private isSceneNotReadyError(error: unknown): boolean {
+    if (!error) return false;
+    const anyErr = error as any;
+    const name = typeof anyErr.name === "string" ? anyErr.name : "";
+    const message = typeof anyErr.message === "string"
+      ? anyErr.message
+      : String(anyErr);
+
+    // Owlbear typically uses MissingDataError / \"No scene found\" when the
+    // extension is loaded but no scene is currently active. In that case we
+    // don't want to treat it as a real connection failure or queue messages.
+    return (
+      name === "MissingDataError" ||
+      message.includes("No scene found") ||
+      message.includes("Missing scene")
+    );
   }
 
   private async broadcastMessage(event: string, data: any) {
@@ -192,15 +235,41 @@ class TimerSyncService {
       this.isConnected = true;
       this.retryAttempts = 0;
     } catch (error) {
-      // Log broadcast errors at reduced frequency
-      if (this.retryAttempts === 0) {
-        console.error(
-          `Broadcast ${event} failed:`,
-          error instanceof Error ? error.message : String(error),
-        );
+      // If there is no active scene yet, Owlbear may throw a MissingDataError /
+      // \"No scene found\". In that case we silently drop the message instead
+      // of queueing it forever or flagging a connection problem.
+      if (this.isSceneNotReadyError(error)) {
+        if (import.meta.env.DEV) {
+          console.debug(
+            `[DarkTorch][broadcastMessage] Scene not ready for ${event}, dropping sync message`,
+          );
+        }
+        return;
       }
 
-      // Queue the message for retry
+      // Log other broadcast errors at reduced frequency with full details
+      if (this.retryAttempts === 0) {
+        const errorDetails: any = {};
+        if (error instanceof Error) {
+          errorDetails.name = error.name;
+          errorDetails.message = error.message;
+          errorDetails.stack = error.stack;
+        } else {
+          errorDetails.raw = String(error);
+          errorDetails.type = typeof error;
+          if (error && typeof error === "object") {
+            try {
+              errorDetails.keys = Object.keys(error);
+              errorDetails.json = JSON.stringify(error, null, 2);
+            } catch {
+              // Can't stringify
+            }
+          }
+        }
+        console.error(`Broadcast ${event} failed:`, errorDetails, error);
+      }
+
+      // Queue the message for retry and mark as disconnected
       this.queueMessage(event, data);
       this.isConnected = false;
     }
@@ -215,10 +284,11 @@ class TimerSyncService {
 
       // Listen for all timer events
       OBR.broadcast.onMessage(TIMER_EVENTS.START, (event: any) => {
+        const data = event.data as TimerSyncEvent;
         const syncEvent: TimerSyncEvent = {
           type: "START",
-          timerId: event.data.timerId,
-          payload: event.data,
+          timerId: data.timerId,
+          payload: data.payload,
           timestamp: event.timestamp,
           userId: event.userId,
         };
@@ -226,10 +296,11 @@ class TimerSyncService {
       });
 
       OBR.broadcast.onMessage(TIMER_EVENTS.PAUSE, (event: any) => {
+        const data = event.data as TimerSyncEvent;
         const syncEvent: TimerSyncEvent = {
           type: "PAUSE",
-          timerId: event.data.timerId,
-          payload: event.data,
+          timerId: data.timerId,
+          payload: data.payload,
           timestamp: event.timestamp,
           userId: event.userId,
         };
@@ -237,10 +308,11 @@ class TimerSyncService {
       });
 
       OBR.broadcast.onMessage(TIMER_EVENTS.RESET, (event: any) => {
+        const data = event.data as TimerSyncEvent;
         const syncEvent: TimerSyncEvent = {
           type: "RESET",
-          timerId: event.data.timerId,
-          payload: event.data,
+          timerId: data.timerId,
+          payload: data.payload,
           timestamp: event.timestamp,
           userId: event.userId,
         };
@@ -248,21 +320,35 @@ class TimerSyncService {
       });
 
       OBR.broadcast.onMessage(TIMER_EVENTS.UPDATE, (event: any) => {
+        const data = event.data as TimerSyncEvent;
         const syncEvent: TimerSyncEvent = {
           type: "UPDATE",
-          timerId: event.data.timerId,
-          payload: event.data,
+          timerId: data.timerId,
+          payload: data.payload,
           timestamp: event.timestamp,
           userId: event.userId,
         };
+
+        if (import.meta.env.DEV) {
+          console.debug("[DarkTorch][onMessage][UPDATE]", {
+            fromUser: syncEvent.userId,
+            timerId: syncEvent.timerId,
+            remaining: (syncEvent.payload as TimerSyncState).remaining,
+            displayMode: (syncEvent.payload as TimerSyncState).displayMode,
+            visibilityMode:
+              (syncEvent.payload as TimerSyncState).visibilityMode,
+          });
+        }
+
         this.handleSyncEvent(syncEvent);
       });
 
       OBR.broadcast.onMessage(TIMER_EVENTS.SYNC, (event: any) => {
+        const data = event.data as TimerSyncEvent;
         const syncEvent: TimerSyncEvent = {
           type: "SYNC",
-          timerId: event.data.timerId,
-          payload: event.data,
+          timerId: data.timerId,
+          payload: data.payload,
           timestamp: event.timestamp,
           userId: event.userId,
         };

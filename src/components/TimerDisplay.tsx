@@ -110,6 +110,8 @@ export const TimerDisplay: React.FC = () => {
     );
   }
 
+  const isPristine = !isRunning && remaining === duration && !isCompleted;
+
   return (
     <Box
       sx={{
@@ -254,6 +256,17 @@ export const TimerDisplay: React.FC = () => {
         </Box>
       </Fade>
 
+      {/* Helper text for players when timer hasn't started yet */}
+      {isPristine && !isGM && (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mt: 0.5, textAlign: 'center' }}
+        >
+          Waiting for the GM to start the torch timer.
+        </Typography>
+      )}
+
       <Fade
         in={displayMode === 'hourglass'}
         timeout={200}
@@ -364,6 +377,17 @@ export const TimerDisplay: React.FC = () => {
           )}
         </Box>
       </Fade>
+
+      {/* Development-only debug readout for sync troubleshooting */}
+      {import.meta.env.DEV && (
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ mt: 0.5, display: 'block' }}
+        >
+          debug: remaining={remaining}s, running={String(isRunning)}, gm={String(isGM)}
+        </Typography>
+      )}
 
     </Box>
   );
