@@ -12,6 +12,8 @@ This is a lightweight extension for the virtual tabletop platform
 [Owlbear Rodeo](https://www.owlbear.rodeo/), designed specifically for
 Shadowdark RPG adventures.
 
+[![Buy Me a Coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&slug=davpin&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/davpin)
+
 ## Features
 
 - **Real-time torch countdown:** Timer defaults to one hour, matching Shadowdark
