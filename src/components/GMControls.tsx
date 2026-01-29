@@ -1,12 +1,12 @@
 import {
-    Add,
-    HourglassEmpty,
-    Pause,
-    PlayArrow,
-    Refresh,
-    Remove,
-    Visibility,
-    VisibilityOff,
+  Add,
+  HourglassEmpty,
+  Pause,
+  PlayArrow,
+  Refresh,
+  Remove,
+  Visibility,
+  VisibilityOff,
 } from '@mui/icons-material';
 import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import React from 'react';
@@ -153,8 +153,14 @@ export const GMControls: React.FC<GMControlsProps> = ({
                 <IconButton
                   onClick={onRemoveTime}
                   disabled={remaining <= incrementAmount}
-                  color="primary"
                   size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                    color: 'common.black',
+                    border: 'none',
+                    '&:hover': { backgroundColor: 'white' },
+                    '&.Mui-disabled': { backgroundColor: 'white', color: 'grey.500' },
+                  }}
                 >
                   <Remove />
                 </IconButton>
@@ -170,7 +176,7 @@ export const GMControls: React.FC<GMControlsProps> = ({
                   backgroundColor: 'background.paper',
                   borderRadius: 1,
                   border: '1px solid',
-                  borderColor: 'grey.200',
+                  borderColor: 'divider',
                   display: 'inline-flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -188,8 +194,14 @@ export const GMControls: React.FC<GMControlsProps> = ({
                 <IconButton
                   onClick={onAddTime}
                   disabled={remaining >= 3600} // Don't exceed 1 hour
-                  color="primary"
                   size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                    color: 'common.black',
+                    border: 'none',
+                    '&:hover': { backgroundColor: 'white' },
+                    '&.Mui-disabled': { backgroundColor: 'white', color: 'grey.500' },
+                  }}
                 >
                   <Add />
                 </IconButton>
@@ -211,7 +223,13 @@ export const GMControls: React.FC<GMControlsProps> = ({
               variant={incrementAmount === 60 ? 'contained' : 'outlined'}
               size="small"
               onClick={() => onIncrementSet(60)} // 1 minute
-              sx={{ px: 1.25, minWidth: 0 }}
+              sx={{
+                px: 1.25,
+                minWidth: 0,
+                ...(incrementAmount === 60
+                  ? { backgroundColor: 'common.black', color: 'white', '&:hover': { backgroundColor: 'common.black' } }
+                  : { backgroundColor: 'white', color: 'common.black', border: '1px solid', borderColor: 'common.black', '&:hover': { backgroundColor: 'white' } }),
+              }}
             >
               1M
             </Button>
@@ -219,7 +237,13 @@ export const GMControls: React.FC<GMControlsProps> = ({
               variant={incrementAmount === 300 ? 'contained' : 'outlined'}
               size="small"
               onClick={() => onIncrementSet(300)} // 5 minutes
-              sx={{ px: 1.25, minWidth: 0 }}
+              sx={{
+                px: 1.25,
+                minWidth: 0,
+                ...(incrementAmount === 300
+                  ? { backgroundColor: 'common.black', color: 'white', '&:hover': { backgroundColor: 'common.black' } }
+                  : { backgroundColor: 'white', color: 'common.black', border: '1px solid', borderColor: 'common.black', '&:hover': { backgroundColor: 'white' } }),
+              }}
             >
               5M
             </Button>
@@ -227,7 +251,13 @@ export const GMControls: React.FC<GMControlsProps> = ({
               variant={incrementAmount === 900 ? 'contained' : 'outlined'}
               size="small"
               onClick={() => onIncrementSet(900)} // 15 minutes
-              sx={{ px: 1.25, minWidth: 0 }}
+              sx={{
+                px: 1.25,
+                minWidth: 0,
+                ...(incrementAmount === 900
+                  ? { backgroundColor: 'common.black', color: 'white', '&:hover': { backgroundColor: 'common.black' } }
+                  : { backgroundColor: 'white', color: 'common.black', border: '1px solid', borderColor: 'common.black', '&:hover': { backgroundColor: 'white' } }),
+              }}
             >
               15M
             </Button>

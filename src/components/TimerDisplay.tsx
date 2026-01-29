@@ -1,9 +1,9 @@
 import {
-    Box,
-    Chip,
-    Fade,
-    TextField,
-    Typography,
+  Box,
+  Chip,
+  Fade,
+  TextField,
+  Typography,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { usePlayerRole } from '../hooks/usePlayerRole';
@@ -372,6 +372,7 @@ export const TimerDisplay: React.FC = () => {
                 isLowTime={timeDisplay.isLowTime}
                 isCriticalTime={timeDisplay.isCriticalTime}
                 isCompleted={isCompleted}
+                showPulse={showPulse}
               />
             </Box>
           )}

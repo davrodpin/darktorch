@@ -1,5 +1,5 @@
-import React from 'react';
 import { ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material';
+import React from 'react';
 
 type TwoIconToggleOption<T extends string> = {
   value: T;
@@ -36,20 +36,52 @@ export function TwoIconToggleGroup<T extends string>({
       }}
       disabled={disabled}
       aria-label={ariaLabel}
+      sx={{
+        '& .MuiToggleButton-root': {
+          backgroundColor: 'white !important',
+          color: 'black !important',
+          border: '1px solid black !important',
+          '&:hover': {
+            backgroundColor: 'white !important',
+          },
+          '&.Mui-selected': {
+            backgroundColor: 'black !important',
+            color: 'white !important',
+            '&:hover': {
+              backgroundColor: 'black !important',
+            },
+          },
+        },
+      }}
     >
-      {options.map((opt) => (
-        <ToggleButton
-          key={opt.value}
-          value={opt.value}
-          aria-label={opt.ariaLabel}
-          disabled={opt.disabled}
-          onClick={opt.onClick}
-        >
-          <Tooltip title={opt.tooltip} placement="top">
-            <span style={{ display: 'inline-flex' }}>{opt.icon}</span>
-          </Tooltip>
-        </ToggleButton>
-      ))}
+      {options.map((opt) => {
+        const selected = value === opt.value;
+        return (
+          <ToggleButton
+            key={opt.value}
+            value={opt.value}
+            aria-label={opt.ariaLabel}
+            disabled={opt.disabled}
+            onClick={opt.onClick}
+            sx={{
+              backgroundColor: selected ? 'black' : 'white',
+              color: selected ? 'white' : 'black',
+              border: '1px solid black',
+              '&:hover': {
+                backgroundColor: selected ? 'black' : 'white',
+              },
+              '& .MuiSvgIcon-root, & svg': {
+                color: 'inherit',
+                fill: 'currentColor',
+              },
+            }}
+          >
+            <Tooltip title={opt.tooltip} placement="top">
+              <span style={{ display: 'inline-flex' }}>{opt.icon}</span>
+            </Tooltip>
+          </ToggleButton>
+        );
+      })}
     </ToggleButtonGroup>
   );
 }

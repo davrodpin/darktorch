@@ -10,6 +10,8 @@ export interface HourglassDisplayProps {
   isLowTime: boolean;
   isCriticalTime: boolean;
   isCompleted: boolean;
+  /** When true and isCompleted, show pulse flash (same as number display) */
+  showPulse?: boolean;
 }
 
 const VIEW_WIDTH = 160;
@@ -38,6 +40,7 @@ export const HourglassDisplay: React.FC<HourglassDisplayProps> = ({
   isLowTime,
   isCriticalTime,
   isCompleted,
+  showPulse = false,
 }) => {
   const theme = useTheme();
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
@@ -58,6 +61,17 @@ export const HourglassDisplay: React.FC<HourglassDisplayProps> = ({
   }, [isCompleted, isCriticalTime, isLowTime, theme.palette]);
 
   const rockOn = isRunning && !isCompleted && !prefersReducedMotion;
+
+  // Flash animation: same markers and speed as number display (pulse / criticalTimeFade / lowTimeFade)
+  const flashAnimation =
+    !prefersReducedMotion &&
+    (isCompleted && showPulse
+      ? 'pulse 0.5s ease-in-out infinite alternate'
+      : isCriticalTime
+        ? 'criticalTimeFade 0.9s ease-in-out infinite'
+        : isLowTime
+          ? 'lowTimeFade 1.8s ease-in-out infinite'
+          : 'none');
 
   // Top sand: sand sits at bottom of bulb (near neck); surface rises as we empty so we empty from top to bottom.
   // progress=1 => surface at top (full); progress=0 => surface at neck (empty)
@@ -85,6 +99,7 @@ export const HourglassDisplay: React.FC<HourglassDisplayProps> = ({
         mx: 'auto',
         position: 'relative',
         filter: `drop-shadow(0 2px 8px ${colors.glow})`,
+        ...(flashAnimation && flashAnimation !== 'none' ? { animation: flashAnimation } : {}),
       }}
     >
       <svg

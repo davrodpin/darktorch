@@ -1,16 +1,15 @@
-import { alpha, createTheme } from '@mui/material/styles';
+import { alpha, createTheme } from "@mui/material/styles";
 
-const black = '#0a0a0a';
-const white = '#ffffff';
-const gray900 = '#1b1b1b';
-const gray700 = '#3a3a3a';
-const gray500 = '#6a6a6a';
-const gray200 = '#e6e6e6';
-const gray100 = '#f3f3f3';
+const black = "#0a0a0a";
+const white = "#ffffff";
+const gray700 = "#3a3a3a";
+const gray500 = "#6a6a6a";
+const gray200 = "#e6e6e6";
+const gray100 = "#f3f3f3";
 
 export const shadowdarkTheme = createTheme({
   palette: {
-    mode: 'light',
+    mode: "light",
     primary: { main: black },
     secondary: { main: gray700 },
     background: {
@@ -26,7 +25,9 @@ export const shadowdarkTheme = createTheme({
     action: {
       active: black,
       hover: alpha(black, 0.04),
+      hoverOpacity: 0,
       selected: alpha(black, 0.08),
+      selectedOpacity: 0,
       disabled: alpha(black, 0.26),
       disabledBackground: alpha(black, 0.06),
       focus: alpha(black, 0.12),
@@ -42,60 +43,60 @@ export const shadowdarkTheme = createTheme({
   typography: {
     fontFamily:
       '"Montserrat", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif',
-    h1: { fontWeight: 800, letterSpacing: '0.01em' },
-    h2: { fontWeight: 800, letterSpacing: '0.01em' },
-    h3: { fontWeight: 800, letterSpacing: '0.01em' },
-    h4: { fontWeight: 800, letterSpacing: '0.01em' },
+    h1: { fontWeight: 800, letterSpacing: "0.01em" },
+    h2: { fontWeight: 800, letterSpacing: "0.01em" },
+    h3: { fontWeight: 800, letterSpacing: "0.01em" },
+    h4: { fontWeight: 800, letterSpacing: "0.01em" },
     // display/band titles (blackletter-style). Keep usage limited to banners.
     h5: {
       fontFamily: '"UnifrakturCook", "Montserrat", serif',
       fontWeight: 700,
-      letterSpacing: '0.01em',
+      letterSpacing: "0.01em",
     },
-    h6: { fontWeight: 800, letterSpacing: '0.01em' },
+    h6: { fontWeight: 800, letterSpacing: "0.01em" },
     button: {
-      textTransform: 'none',
+      textTransform: "none",
       fontWeight: 800,
-      letterSpacing: '0.02em',
+      letterSpacing: "0.02em",
     },
   },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        ':root': {
-          colorScheme: 'light',
+        ":root": {
+          colorScheme: "light",
         },
         body: {
           backgroundColor: white,
         },
-        '*': {
-          WebkitTapHighlightColor: 'transparent',
+        "*": {
+          WebkitTapHighlightColor: "transparent",
         },
-        '::selection': {
+        "::selection": {
           backgroundColor: alpha(black, 0.14),
         },
-        '@media (prefers-reduced-motion: reduce)': {
-          '*': {
-            animationDuration: '0.001ms',
+        "@media (prefers-reduced-motion: reduce)": {
+          "*": {
+            animationDuration: "0.001ms",
             animationIterationCount: 1,
-            transitionDuration: '0.001ms',
-            scrollBehavior: 'auto',
+            transitionDuration: "0.001ms",
+            scrollBehavior: "auto",
           },
         },
-        '@keyframes pulse': {
-          '0%': { opacity: 1 },
-          '50%': { opacity: 0.7 },
-          '100%': { opacity: 1 },
+        "@keyframes pulse": {
+          "0%": { opacity: 1 },
+          "50%": { opacity: 0.7 },
+          "100%": { opacity: 1 },
         },
-        '@keyframes lowTimeFade': {
-          '0%': { opacity: 1 },
-          '50%': { opacity: 0.35 },
-          '100%': { opacity: 1 },
+        "@keyframes lowTimeFade": {
+          "0%": { opacity: 1 },
+          "50%": { opacity: 0.35 },
+          "100%": { opacity: 1 },
         },
-        '@keyframes criticalTimeFade': {
-          '0%': { opacity: 1 },
-          '50%': { opacity: 0.2 },
-          '100%': { opacity: 1 },
+        "@keyframes criticalTimeFade": {
+          "0%": { opacity: 1 },
+          "50%": { opacity: 0.2 },
+          "100%": { opacity: 1 },
         },
       },
     },
@@ -104,7 +105,7 @@ export const shadowdarkTheme = createTheme({
         root: {
           backgroundColor: white,
           border: `1px solid ${gray200}`,
-          boxShadow: 'none',
+          boxShadow: "none",
         },
       },
     },
@@ -114,41 +115,83 @@ export const shadowdarkTheme = createTheme({
       },
       styleOverrides: {
         root: ({ ownerState }) => ({
-          transition: 'transform 120ms ease, background-color 160ms ease, color 160ms ease',
+          transition:
+            "transform 120ms ease, background-color 160ms ease, color 160ms ease",
           borderRadius: 8,
-          '&:focus-visible': {
+          "&:focus-visible": {
             outline: `2px solid ${black}`,
             outlineOffset: 2,
           },
-          '&:hover': {
-            transform: 'translateY(-1px)',
+          "&:hover": {
+            transform: "translateY(-1px)",
           },
-          '&:active': {
-            transform: 'translateY(0px)',
+          "&:active": {
+            transform: "translateY(0px)",
           },
-          ...(ownerState.variant === 'contained'
+          ...(ownerState.variant === "contained"
             ? {
-                backgroundColor: black,
-                color: white,
-                '&:hover': { backgroundColor: gray900 },
-              }
+              backgroundColor: black,
+              color: white,
+              "&:hover": { backgroundColor: black },
+            }
             : undefined),
         }),
+        contained: {
+          backgroundColor: `${black} !important`,
+          color: `${white} !important`,
+          "&:hover": {
+            backgroundColor: `${black} !important`,
+          },
+        },
+        containedPrimary: {
+          backgroundColor: `${black} !important`,
+          color: `${white} !important`,
+          "&:hover": {
+            backgroundColor: `${black} !important`,
+          },
+        },
+        outlined: {
+          backgroundColor: `${white} !important`,
+          color: `${black} !important`,
+          border: `1px solid ${black} !important`,
+          "&:hover": {
+            backgroundColor: `${white} !important`,
+            borderColor: `${black} !important`,
+          },
+        },
+        outlinedPrimary: {
+          backgroundColor: `${white} !important`,
+          color: `${black} !important`,
+          border: `1px solid ${black} !important`,
+          "&:hover": {
+            backgroundColor: `${white} !important`,
+            borderColor: `${black} !important`,
+          },
+        },
       },
     },
     MuiIconButton: {
       styleOverrides: {
         root: {
-          transition: 'transform 120ms ease, background-color 160ms ease',
-          '&:focus-visible': {
+          backgroundColor: white,
+          color: black,
+          border: `1px solid ${black}`,
+          transition: "transform 120ms ease, background-color 160ms ease",
+          "&:focus-visible": {
             outline: `2px solid ${black}`,
             outlineOffset: 2,
           },
-          '&:hover': {
-            transform: 'translateY(-1px)',
+          "&:hover": {
+            backgroundColor: white,
+            transform: "translateY(-1px)",
           },
-          '&:active': {
-            transform: 'translateY(0px)',
+          "&:active": {
+            transform: "translateY(0px)",
+          },
+          "&.Mui-disabled": {
+            backgroundColor: white,
+            color: gray500,
+            borderColor: gray200,
           },
         },
       },
@@ -156,19 +199,61 @@ export const shadowdarkTheme = createTheme({
     MuiToggleButton: {
       styleOverrides: {
         root: {
-          borderColor: gray200,
+          backgroundColor: `${white} !important`,
           color: black,
-          '&.Mui-selected': {
-            backgroundColor: black,
-            borderColor: black,
-            color: white,
+          border: `1px solid ${black}`,
+          "&:hover": {
+            backgroundColor: `${white} !important`,
           },
-          '&.Mui-selected:hover': {
-            backgroundColor: gray900,
+          "&.Mui-selected": {
+            backgroundColor: `${black} !important`,
+            borderColor: `${black} !important`,
+            color: `${white} !important`,
+            "& .MuiSvgIcon-root, & svg": {
+              color: "inherit",
+              fill: "currentColor",
+            },
           },
-          '&:focus-visible': {
+          "&.Mui-selected:hover": {
+            backgroundColor: `${black} !important`,
+          },
+          "&:focus-visible": {
             outline: `2px solid ${black}`,
             outlineOffset: 2,
+          },
+          // Grouped toggle buttons: same black/white, no gray (wins over MUI variants)
+          "&.MuiToggleButtonGroup-grouped": {
+            backgroundColor: `${white} !important`,
+            color: `${black} !important`,
+            border: `1px solid ${black} !important`,
+            "&:hover": {
+              backgroundColor: `${white} !important`,
+            },
+            "&.Mui-selected": {
+              backgroundColor: `${black} !important`,
+              borderColor: `${black} !important`,
+              color: `${white} !important`,
+              "& .MuiSvgIcon-root, & svg": {
+                color: "inherit",
+                fill: "currentColor",
+              },
+            },
+            "&.Mui-selected:hover": {
+              backgroundColor: `${black} !important`,
+            },
+          },
+        },
+      },
+    },
+    MuiToggleButtonGroup: {
+      styleOverrides: {
+        root: {
+          border: `1px solid ${black}`,
+        },
+        grouped: {
+          border: 0,
+          "&:not(:first-of-type)": {
+            borderLeft: `1px solid ${black}`,
           },
         },
       },
@@ -187,7 +272,7 @@ export const shadowdarkTheme = createTheme({
         tooltip: {
           backgroundColor: black,
           border: `1px solid ${gray700}`,
-          boxShadow: 'none',
+          boxShadow: "none",
         },
         arrow: {
           color: black,
@@ -197,10 +282,10 @@ export const shadowdarkTheme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          '&:hover .MuiOutlinedInput-notchedOutline': {
+          "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: gray700,
           },
-          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: black,
             boxShadow: `0 0 0 3px ${alpha(black, 0.12)}`,
           },
@@ -228,4 +313,3 @@ export const shadowdarkTheme = createTheme({
     },
   },
 });
-
