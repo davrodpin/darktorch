@@ -52,7 +52,7 @@ describe("timerStore", () => {
     expect(useTimerStore.getState().isCompleted).toBe(false);
   });
 
-  it("setTime clamps between 0 and DEFAULT_DURATION and updates flags", () => {
+  it("setTime clamps between 0 and current duration and updates flags", () => {
     useTimerStore.setState({ isRunning: true, isCompleted: false });
 
     useTimerStore.getState().setTime(100);
@@ -67,6 +67,27 @@ describe("timerStore", () => {
 
     useTimerStore.getState().setTime(99999);
     expect(useTimerStore.getState().remaining).toBe(DEFAULT_DURATION);
+  });
+
+  it("setDuration updates duration and clamps remaining when it would exceed new duration", () => {
+    useTimerStore.getState().setDuration(7200); // 120 minutes
+    expect(useTimerStore.getState().duration).toBe(7200);
+    expect(useTimerStore.getState().remaining).toBe(DEFAULT_DURATION); // unchanged when increasing duration
+
+    resetStore();
+    useTimerStore.setState({ remaining: 3600, duration: DEFAULT_DURATION });
+    useTimerStore.getState().setDuration(1800); // 30 minutes
+    expect(useTimerStore.getState().duration).toBe(1800);
+    expect(useTimerStore.getState().remaining).toBe(1800); // clamped when decreasing duration
+  });
+
+  it("reset sets remaining to current duration", () => {
+    useTimerStore.getState().setDuration(7200);
+    useTimerStore.setState({ remaining: 100, isRunning: true });
+    useTimerStore.getState().reset();
+    expect(useTimerStore.getState().remaining).toBe(7200);
+    expect(useTimerStore.getState().duration).toBe(7200);
+    expect(useTimerStore.getState().isRunning).toBe(false);
   });
 
   it("complete sets terminal state", () => {

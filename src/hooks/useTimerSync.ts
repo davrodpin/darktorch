@@ -86,13 +86,20 @@ export const useTimerSync = () => {
           timerActions.pause();
           break;
 
-        case "RESET":
+        case "RESET": {
+          const payload = event.payload as Partial<TimerSyncState>;
+          if (payload.duration !== undefined) {
+            timerActions.setDuration(payload.duration);
+          }
           timerActions.reset();
           break;
+        }
 
         case "UPDATE": {
           const payload = event.payload as Partial<TimerSyncState>;
-
+          if (payload.duration !== undefined) {
+            timerActions.setDuration(payload.duration);
+          }
           if (payload.remaining !== undefined) {
             timerActions.setTime(payload.remaining);
           }
@@ -119,6 +126,9 @@ export const useTimerSync = () => {
           // authoritative (except when sent by ourselves, which is filtered
           // earlier). This ensures that GM adjustments using SYNC are applied
           // even if local leader election disagrees.
+          if (payload.duration !== undefined) {
+            timerActions.setDuration(payload.duration);
+          }
           if (payload.remaining !== undefined) {
             timerActions.setTime(payload.remaining);
           }
@@ -202,11 +212,17 @@ export const useTimerSync = () => {
   }, [isCurrentPlayerLeader, timerActions, createSyncState]);
 
   const syncSetTime = useCallback(
-    (seconds: number) => {
-      // Always update local store
-      timerActions.setTime(seconds);
+    (seconds: number, optionalDuration?: number) => {
+      if (optionalDuration != null) {
+        timerActions.setDuration(optionalDuration);
+        timerActions.setTime(seconds);
+      } else {
+        if (seconds > duration) {
+          timerActions.setDuration(seconds);
+        }
+        timerActions.setTime(seconds);
+      }
 
-      // Only GMs or the elected leader should broadcast authoritative time
       const isPlayerLeader = isCurrentPlayerLeader();
       if (!isGM && !isPlayerLeader) {
         return;
@@ -214,12 +230,15 @@ export const useTimerSync = () => {
 
       const syncState = createSyncState();
       syncState.remaining = seconds;
+      if (optionalDuration != null) {
+        syncState.duration = optionalDuration;
+      } else if (seconds > duration) {
+        syncState.duration = seconds;
+      }
 
-      // Use a full SYNC broadcast so followers immediately adopt the
-      // authoritative state from the GM, just like the heartbeat path.
       timerSyncService.broadcastTimerSync(syncState);
     },
-    [isCurrentPlayerLeader, timerActions, createSyncState, isGM],
+    [isCurrentPlayerLeader, timerActions, createSyncState, isGM, duration],
   );
 
   const syncSetDisplayMode = useCallback(

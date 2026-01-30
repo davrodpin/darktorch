@@ -1,8 +1,8 @@
 import {
-    Alert,
-    AlertTitle,
-    Box,
-    Divider,
+  Alert,
+  AlertTitle,
+  Box,
+  Divider,
 } from '@mui/material';
 import OBR from '@owlbear-rodeo/sdk';
 import React, { useEffect, useRef, useState } from 'react';
@@ -179,6 +179,7 @@ export const TimerControls: React.FC = () => {
           onRemoveTime={handleRemoveTime}
           onIncrementSet={handleIncrementSet}
           remaining={remaining}
+          duration={duration}
           incrementAmount={incrementAmount}
         />
       ) : (

@@ -98,8 +98,39 @@ describe('TimerDisplay', () => {
 
     await user.click(screen.getByText('60:00'));
 
-    expect(screen.getByLabelText('Minutes')).toBeInTheDocument();
-    expect(screen.getByLabelText('Seconds')).toBeInTheDocument();
+    expect(screen.getByLabelText('Starting time minutes')).toBeInTheDocument();
+    expect(screen.getByLabelText('Current time minutes')).toBeInTheDocument();
+    expect(screen.getByText('Starting time')).toBeInTheDocument();
+    expect(screen.getByText('Current time')).toBeInTheDocument();
+  });
+
+  it('does not save and stays in edit mode when current time > starting time', async () => {
+    const user = userEvent.setup();
+    mockIsGM = true;
+    mockIsLeader = true;
+    useTimerStore.setState({
+      displayMode: 'number',
+      visibilityMode: 'EVERYONE',
+      duration: 3600,
+      remaining: 1800,
+    });
+
+    render(<TimerDisplay />);
+
+    await user.click(screen.getByText('30:00'));
+
+    const currentMinutesInput = screen.getByLabelText('Current time minutes');
+    await user.clear(currentMinutesInput);
+    await user.type(currentMinutesInput, '90');
+    const currentSecondsInput = screen.getByLabelText('Current time seconds');
+    await user.clear(currentSecondsInput);
+    await user.type(currentSecondsInput, '00');
+
+    await user.keyboard('{Enter}');
+
+    expect(syncSetTime).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('Current time minutes')).toBeInTheDocument();
+    expect(screen.getByLabelText('Starting time minutes')).toBeInTheDocument();
   });
 });
 

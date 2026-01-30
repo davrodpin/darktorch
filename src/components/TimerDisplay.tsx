@@ -22,11 +22,15 @@ export const TimerDisplay: React.FC = () => {
   const timeDisplay = createTimeDisplay(remaining, isCompleted);
   const [showPulse, setShowPulse] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editMinutes, setEditMinutes] = useState('');
-  const [editSeconds, setEditSeconds] = useState('');
+  const [editStartMinutes, setEditStartMinutes] = useState('');
+  const [editStartSeconds, setEditStartSeconds] = useState('');
+  const [editCurrentMinutes, setEditCurrentMinutes] = useState('');
+  const [editCurrentSeconds, setEditCurrentSeconds] = useState('');
+  const [showCurrentTimeFlash, setShowCurrentTimeFlash] = useState(false);
   const { playAdjustmentSound } = useSoundNotifications();
 
   const canEditTime = isGM && isLeader;
+  const MIN_DURATION_SECONDS = 60;
 
   // Trigger pulse animation when timer completes
   useEffect(() => {
@@ -39,37 +43,53 @@ export const TimerDisplay: React.FC = () => {
     }
   }, [isCompleted, showPulse]);
 
-  // Initialize edit values when entering edit mode
+  // Clear flash after animation completes
+  useEffect(() => {
+    if (!showCurrentTimeFlash) return;
+    const t = setTimeout(() => setShowCurrentTimeFlash(false), 1200);
+    return () => clearTimeout(t);
+  }, [showCurrentTimeFlash]);
+
   const handleEnterEditMode = () => {
     if (!canEditTime) return;
 
     if (isRunning) {
       syncPause();
     }
-    const minutes = Math.floor(remaining / 60);
-    const seconds = remaining % 60;
-    setEditMinutes(minutes.toString());
-    setEditSeconds(seconds.toString().padStart(2, '0'));
+    setEditStartMinutes(Math.floor(duration / 60).toString());
+    setEditStartSeconds((duration % 60).toString().padStart(2, '0'));
+    setEditCurrentMinutes(Math.floor(remaining / 60).toString());
+    setEditCurrentSeconds((remaining % 60).toString().padStart(2, '0'));
+    setShowCurrentTimeFlash(false);
     setIsEditing(true);
   };
 
   const handleSaveTime = () => {
     if (!canEditTime) return;
 
-    const minutes = parseInt(editMinutes) || 0;
-    const seconds = parseInt(editSeconds) || 0;
-    const totalSeconds = Math.min(minutes * 60 + seconds, duration); // Cap at duration
-    syncSetTime(totalSeconds);
+    const startTotal = Math.max(
+      MIN_DURATION_SECONDS,
+      (parseInt(editStartMinutes, 10) || 0) * 60 + (parseInt(editStartSeconds, 10) || 0)
+    );
+    const currentTotal =
+      (parseInt(editCurrentMinutes, 10) || 0) * 60 + (parseInt(editCurrentSeconds, 10) || 0);
+
+    if (currentTotal > startTotal) {
+      setShowCurrentTimeFlash(true);
+      return;
+    }
+
+    syncSetTime(currentTotal, startTotal);
     playAdjustmentSound(true);
     setIsEditing(false);
   };
 
   const handleCancelEdit = () => {
-    // Reset to original values
-    const originalMinutes = Math.floor(remaining / 60);
-    const originalSeconds = remaining % 60;
-    setEditMinutes(originalMinutes.toString());
-    setEditSeconds(originalSeconds.toString().padStart(2, '0'));
+    setEditStartMinutes(Math.floor(duration / 60).toString());
+    setEditStartSeconds((duration % 60).toString().padStart(2, '0'));
+    setEditCurrentMinutes(Math.floor(remaining / 60).toString());
+    setEditCurrentSeconds((remaining % 60).toString().padStart(2, '0'));
+    setShowCurrentTimeFlash(false);
     setIsEditing(false);
   };
 
@@ -81,14 +101,34 @@ export const TimerDisplay: React.FC = () => {
     }
   };
 
-  const handleMinutesChange = (value: string) => {
-    const cleaned = value.replace(/[^\d]/g, '');
-    setEditMinutes(cleaned);
+  const inputStyle = {
+    textAlign: 'center' as const,
+    fontSize: '2.25rem',
+    width: '72px',
+    fontFamily:
+      '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+    fontWeight: 'bold' as const,
   };
-
-  const handleSecondsChange = (value: string) => {
-    const cleaned = value.replace(/[^\d]/g, '');
-    setEditSeconds(cleaned);
+  const secondsInputStyle = { ...inputStyle, width: '64px' };
+  const timeInputSx = {
+    '& .MuiOutlinedInput-input': { px: 1 },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'black',
+      borderWidth: '2px',
+      boxShadow: 'none',
+    },
+    '& .MuiOutlinedInput-root.Mui-focusVisible .MuiOutlinedInput-notchedOutline': {
+      borderColor: 'black',
+      borderWidth: '2px',
+      boxShadow: 'none',
+    },
+  };
+  const colonStyle = {
+    fontFamily:
+      '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+    fontWeight: 'bold' as const,
+    fontSize: '2.25rem',
+    color: 'text.primary',
   };
 
   const handleContainerBlur = (e: React.FocusEvent) => {
@@ -116,7 +156,7 @@ export const TimerDisplay: React.FC = () => {
     <Box
       sx={{
         textAlign: 'center',
-        pt: displayMode === 'hourglass' ? 1 : 2,
+        pt: isEditing ? 0.5 : displayMode === 'hourglass' ? 1 : 2,
         pb: displayMode === 'hourglass' ? 0.25 : 2,
       }}
     >
@@ -127,85 +167,129 @@ export const TimerDisplay: React.FC = () => {
             <Box
               sx={{
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1,
+                gap: 1.5,
                 mb: 2,
                 width: '100%',
                 px: 2,
                 boxSizing: 'border-box',
+                '@keyframes currentTimeFlash': {
+                  '0%, 100%': { boxShadow: 'none' },
+                  '50%': {
+                    boxShadow: '0 0 0 2px',
+                    boxShadowColor: 'error.main',
+                  },
+                },
               }}
               onBlur={handleContainerBlur}
               tabIndex={-1}
             >
-              <TextField
-                value={editMinutes}
-                onChange={(e) => handleMinutesChange(e.target.value)}
-                onKeyDown={handleKeyPress}
-                sx={{
-                  '& .MuiOutlinedInput-input': {
-                    px: 1,
-                  },
-                }}
-                inputProps={{
-                  min: 0,
-                  max: Math.floor(duration / 60),
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  'aria-label': 'Minutes',
-                  style: {
-                    textAlign: 'center',
-                    fontSize: '3.6rem',
-                    width: '96px',
-                    fontFamily:
-                      '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                    fontWeight: 'bold',
-                  },
-                }}
-                variant="outlined"
-                size="small"
-                autoFocus
-              />
-              <Typography
-                variant="h2"
-                component="div"
-                sx={{
-                  fontFamily:
-                    '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                  fontWeight: 'bold',
-                  fontSize: '3.6rem',
-                  color: 'text.primary',
-                }}
-              >
-                :
-              </Typography>
-              <TextField
-                value={editSeconds}
-                onChange={(e) => handleSecondsChange(e.target.value)}
-                onKeyDown={handleKeyPress}
-                sx={{
-                  '& .MuiOutlinedInput-input': {
-                    px: 1,
-                  },
-                }}
-                inputProps={{
-                  min: 0,
-                  max: 59,
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  'aria-label': 'Seconds',
-                  style: {
-                    textAlign: 'center',
-                    fontSize: '3.6rem',
-                    width: '96px',
-                    fontFamily:
-                      '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                    fontWeight: 'bold',
-                  },
-                }}
-                variant="outlined"
-                size="small"
-              />
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Starting time
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    value={editStartMinutes}
+                    onChange={(e) => setEditStartMinutes(e.target.value.replace(/[^\d]/g, ''))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlash 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 999,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Starting time minutes',
+                      style: inputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                  />
+                  <Typography component="div" sx={colonStyle}>:</Typography>
+                  <TextField
+                    value={editStartSeconds}
+                    onChange={(e) => setEditStartSeconds(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlash 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 59,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Starting time seconds',
+                      style: secondsInputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                  />
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Current time
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                  value={editCurrentMinutes}
+                  onChange={(e) => setEditCurrentMinutes(e.target.value.replace(/[^\d]/g, ''))}
+                  onKeyDown={handleKeyPress}
+                  sx={{
+                    ...timeInputSx,
+                    ...(showCurrentTimeFlash && {
+                      animation: 'currentTimeFlash 0.4s ease-in-out 3',
+                      borderRadius: 1,
+                    }),
+                  }}
+                  inputProps={{
+                    min: 0,
+                    max: 999,
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    'aria-label': 'Current time minutes',
+                    style: inputStyle,
+                  }}
+                  variant="outlined"
+                  size="small"
+                  autoFocus
+                />
+                <Typography component="div" sx={colonStyle}>:</Typography>
+                <TextField
+                  value={editCurrentSeconds}
+                  onChange={(e) => setEditCurrentSeconds(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                  onKeyDown={handleKeyPress}
+                  sx={{
+                    ...timeInputSx,
+                    ...(showCurrentTimeFlash && {
+                      animation: 'currentTimeFlash 0.4s ease-in-out 3',
+                      borderRadius: 1,
+                    }),
+                  }}
+                  inputProps={{
+                    min: 0,
+                    max: 59,
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    'aria-label': 'Current time seconds',
+                    style: secondsInputStyle,
+                  }}
+                  variant="outlined"
+                  size="small"
+                />
+                </Box>
+              </Box>
             </Box>
           ) : (
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.75 }}>
@@ -278,85 +362,129 @@ export const TimerDisplay: React.FC = () => {
             <Box
               sx={{
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: 1,
+                gap: 1.5,
                 mb: 2,
                 width: '100%',
                 px: 2,
                 boxSizing: 'border-box',
+                '@keyframes currentTimeFlashHourglass': {
+                  '0%, 100%': { boxShadow: 'none' },
+                  '50%': {
+                    boxShadow: '0 0 0 2px',
+                    boxShadowColor: 'error.main',
+                  },
+                },
               }}
               onBlur={handleContainerBlur}
               tabIndex={-1}
             >
-              <TextField
-                value={editMinutes}
-                onChange={(e) => handleMinutesChange(e.target.value)}
-                onKeyDown={handleKeyPress}
-                sx={{
-                  '& .MuiOutlinedInput-input': {
-                    px: 1,
-                  },
-                }}
-                inputProps={{
-                  min: 0,
-                  max: Math.floor(duration / 60),
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  'aria-label': 'Minutes',
-                  style: {
-                    textAlign: 'center',
-                    fontSize: '3.6rem',
-                    width: '96px',
-                    fontFamily:
-                      '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                    fontWeight: 'bold',
-                  },
-                }}
-                variant="outlined"
-                size="small"
-                autoFocus
-              />
-              <Typography
-                variant="h2"
-                component="div"
-                sx={{
-                  fontFamily:
-                    '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                  fontWeight: 'bold',
-                  fontSize: '3.6rem',
-                  color: 'text.primary',
-                }}
-              >
-                :
-              </Typography>
-              <TextField
-                value={editSeconds}
-                onChange={(e) => handleSecondsChange(e.target.value)}
-                onKeyDown={handleKeyPress}
-                sx={{
-                  '& .MuiOutlinedInput-input': {
-                    px: 1,
-                  },
-                }}
-                inputProps={{
-                  min: 0,
-                  max: 59,
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  'aria-label': 'Seconds',
-                  style: {
-                    textAlign: 'center',
-                    fontSize: '3.6rem',
-                    width: '96px',
-                    fontFamily:
-                      '"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                    fontWeight: 'bold',
-                  },
-                }}
-                variant="outlined"
-                size="small"
-              />
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Starting time
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    value={editStartMinutes}
+                    onChange={(e) => setEditStartMinutes(e.target.value.replace(/[^\d]/g, ''))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlashHourglass 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 999,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Starting time minutes',
+                      style: inputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                  />
+                  <Typography component="div" sx={colonStyle}>:</Typography>
+                  <TextField
+                    value={editStartSeconds}
+                    onChange={(e) => setEditStartSeconds(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlashHourglass 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 59,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Starting time seconds',
+                      style: secondsInputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                  />
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Current time
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    value={editCurrentMinutes}
+                  onChange={(e) => setEditCurrentMinutes(e.target.value.replace(/[^\d]/g, ''))}
+                  onKeyDown={handleKeyPress}
+                  sx={{
+                    ...timeInputSx,
+                    ...(showCurrentTimeFlash && {
+                      animation: 'currentTimeFlashHourglass 0.4s ease-in-out 3',
+                      borderRadius: 1,
+                    }),
+                  }}
+                  inputProps={{
+                    min: 0,
+                    max: 999,
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    'aria-label': 'Current time minutes',
+                    style: inputStyle,
+                  }}
+                  variant="outlined"
+                  size="small"
+                  autoFocus
+                />
+                <Typography component="div" sx={colonStyle}>:</Typography>
+                <TextField
+                  value={editCurrentSeconds}
+                  onChange={(e) => setEditCurrentSeconds(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                  onKeyDown={handleKeyPress}
+                  sx={{
+                    ...timeInputSx,
+                    ...(showCurrentTimeFlash && {
+                      animation: 'currentTimeFlashHourglass 0.4s ease-in-out 3',
+                      borderRadius: 1,
+                    }),
+                  }}
+                  inputProps={{
+                    min: 0,
+                    max: 59,
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                    'aria-label': 'Current time seconds',
+                    style: secondsInputStyle,
+                  }}
+                  variant="outlined"
+                  size="small"
+                />
+                </Box>
+              </Box>
             </Box>
           ) : (
             <Box

@@ -33,6 +33,7 @@ export interface GMControlsProps {
   onRemoveTime: () => void;
   onIncrementSet: (seconds: number) => void;
   remaining: number;
+  duration: number;
   incrementAmount: number;
 }
 
@@ -51,6 +52,7 @@ export const GMControls: React.FC<GMControlsProps> = ({
   onRemoveTime,
   onIncrementSet,
   remaining,
+  duration,
   incrementAmount,
 }) => {
   return (
@@ -193,7 +195,7 @@ export const GMControls: React.FC<GMControlsProps> = ({
               <span style={{ display: 'inline-flex' }}>
                 <IconButton
                   onClick={onAddTime}
-                  disabled={remaining >= 3600} // Don't exceed 1 hour
+                  disabled={remaining >= duration}
                   size="small"
                   sx={{
                     backgroundColor: 'white',

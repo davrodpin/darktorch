@@ -14,6 +14,7 @@ export interface TimerActions {
   pause: () => void;
   reset: () => void;
   setTime: (seconds: number) => void;
+  setDuration: (seconds: number) => void;
   complete: () => void; // Called when timer reaches zero
   toggleSound: () => void; // Toggle sound notifications
   setSoundEnabled: (enabled: boolean) => void; // Set sound enabled state

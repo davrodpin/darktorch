@@ -72,6 +72,10 @@ export const shadowdarkTheme = createTheme({
         "*": {
           WebkitTapHighlightColor: "transparent",
         },
+        "input:focus, input:focus-visible, textarea:focus, textarea:focus-visible":
+          {
+            outline: "none",
+          },
         "::selection": {
           backgroundColor: alpha(black, 0.14),
         },
@@ -285,9 +289,24 @@ export const shadowdarkTheme = createTheme({
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: gray700,
           },
+          "&.Mui-focused": {
+            outline: "none",
+          },
+          "& .MuiOutlinedInput-input:focus": {
+            outline: "none",
+          },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: black,
-            boxShadow: `0 0 0 3px ${alpha(black, 0.12)}`,
+            borderColor: `${black} !important`,
+            borderWidth: "2px !important",
+            boxShadow: "none",
+          },
+          "&.Mui-focusVisible": {
+            outline: "none",
+          },
+          "&.Mui-focusVisible .MuiOutlinedInput-notchedOutline": {
+            borderColor: `${black} !important`,
+            borderWidth: "2px !important",
+            boxShadow: "none",
           },
         },
       },

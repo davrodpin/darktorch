@@ -2,6 +2,8 @@ import { create } from "zustand";
 import type { TimerStore } from "../types";
 
 const DEFAULT_DURATION = 3600; // 60 minutes in seconds
+const MAX_DURATION_SECONDS = 999 * 60; // 999 minutes
+const MIN_DURATION_SECONDS = 60; // 1 minute
 
 export const useTimerStore = create<TimerStore>((set, get) => ({
   // Initial state
@@ -27,19 +29,36 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   },
 
   reset: () => {
+    const { duration } = get();
     set({
-      remaining: DEFAULT_DURATION,
+      remaining: duration,
       isRunning: false,
       isCompleted: false,
     });
   },
 
   setTime: (seconds: number) => {
-    const clampedSeconds = Math.max(0, Math.min(seconds, DEFAULT_DURATION));
+    const { duration } = get();
+    const clampedSeconds = Math.max(0, Math.min(seconds, duration));
     set({
       remaining: clampedSeconds,
       isRunning: clampedSeconds > 0 && get().isRunning,
       isCompleted: clampedSeconds === 0,
+    });
+  },
+
+  setDuration: (seconds: number) => {
+    const clamped = Math.max(
+      MIN_DURATION_SECONDS,
+      Math.min(seconds, MAX_DURATION_SECONDS),
+    );
+    const state = get();
+    const remaining = Math.min(state.remaining, clamped);
+    set({
+      duration: clamped,
+      remaining,
+      isRunning: remaining > 0 && state.isRunning,
+      isCompleted: remaining === 0,
     });
   },
 
