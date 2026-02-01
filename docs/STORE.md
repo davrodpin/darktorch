@@ -5,9 +5,7 @@ author: David Pinheiro
 image: https://davrodpin.github.io/darktorch/images/darktorch.1.png
 icon: https://davrodpin.github.io/darktorch/icon.png
 tags:
-  - shadowdark
-  - timer
-  - utility
+  - tool
 manifest: https://davrodpin.github.io/darktorch/manifest.json
 learn-more: https://github.com/davrodpin/darktorch
 ---
