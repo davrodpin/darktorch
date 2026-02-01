@@ -43,3 +43,9 @@ how to install the extension.
 
 The Dark Torch install link is:
 https://davrodpin.github.io/darktorch/manifest.json
+
+## Legal
+
+Dark Torch is not an official Shadowdark product and is not affiliated with or
+endorsed by The Arcane Library, LLC. Shadowdark RPG © 2023 The Arcane Library,
+LLC.
