@@ -69,10 +69,11 @@ export const GMControls: React.FC<GMControlsProps> = ({
         <Box
           sx={{
             display: 'flex',
-            gap: 1,
-            flexWrap: 'wrap',
+            gap: 0.5,
+            flexWrap: 'nowrap',
             justifyContent: 'center',
             alignItems: 'center',
+            px: 1,
           }}
         >
           {/* Start/Reset */}

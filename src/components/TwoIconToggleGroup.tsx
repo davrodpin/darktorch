@@ -67,12 +67,15 @@ export function TwoIconToggleGroup<T extends string>({
               backgroundColor: selected ? 'black' : 'white',
               color: selected ? 'white' : 'black',
               border: '1px solid black',
+              padding: '4px 8px',
+              minWidth: 0,
               '&:hover': {
                 backgroundColor: selected ? 'black' : 'white',
               },
               '& .MuiSvgIcon-root, & svg': {
                 color: 'inherit',
                 fill: 'currentColor',
+                fontSize: '1.1rem',
               },
             }}
           >
