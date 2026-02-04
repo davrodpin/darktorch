@@ -3,6 +3,8 @@ import OBR from '@owlbear-rodeo/sdk';
 
 class ContextMenuService {
   private isInitialized = false;
+  private isActionOpen = false;
+  private unsubscribeOpenChange?: () => void;
 
   async initialize() {
     if (this.isInitialized) return;
@@ -12,6 +14,11 @@ class ContextMenuService {
         this.isInitialized = true;
         return;
       }
+
+      this.unsubscribeOpenChange = OBR.action.onOpenChange((isOpen) => {
+        this.isActionOpen = isOpen;
+        this.updateGlobalMenu();
+      });
 
       await this.setupContextMenu();
       this.isInitialized = true;
@@ -85,20 +92,28 @@ class ContextMenuService {
     });
 
     // Create global timer menu (always visible)
+    await this.updateGlobalMenu();
+  }
+
+  private async updateGlobalMenu() {
     OBR.contextMenu.create({
       id: `${EXTENSION_ID}/global-timer`,
       icons: [
         {
           icon: '/timer-icon.svg',
-          label: 'Open Dark Torch',
+          label: this.isActionOpen ? 'Close Dark Torch' : 'Open Dark Torch',
           filter: {
             // No filter - always visible
           },
         },
       ],
       onClick: async () => {
-        // This would open the timer extension popup
-        console.log('Opening Dark Torch extension');
+        const isOpen = await OBR.action.isOpen();
+        if (isOpen) {
+          await OBR.action.close();
+        } else {
+          await OBR.action.open();
+        }
       },
     });
   }
@@ -280,6 +295,7 @@ class ContextMenuService {
 
   // Cleanup method
   destroy() {
+    this.unsubscribeOpenChange?.();
     this.isInitialized = false;
   }
 }
