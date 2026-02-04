@@ -3,8 +3,8 @@ import React from 'react';
 import { DisplayModeToggle } from './DisplayModeToggle';
 
 export interface PlayerControlsProps {
-  displayMode: 'number' | 'hourglass';
-  onDisplayModeChange: (mode: 'number' | 'hourglass') => void;
+  displayMode: 'number' | 'hourglass' | 'torch';
+  onDisplayModeChange: (mode: 'number' | 'hourglass' | 'torch') => void;
 }
 
 export const PlayerControls: React.FC<PlayerControlsProps> = ({

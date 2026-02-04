@@ -12,6 +12,7 @@ import { useTimerSync } from '../hooks/useTimerSync';
 import { useTimerIsCompleted, useTimerStore } from '../store/timerStore';
 import { createTimeDisplay } from '../utils/timeUtils';
 import { HourglassDisplay } from './HourglassDisplay';
+import { TorchDisplay } from './TorchDisplay';
 
 export const TimerDisplay: React.FC = () => {
   const { remaining, isRunning, duration, displayMode, visibilityMode } =
@@ -156,8 +157,8 @@ export const TimerDisplay: React.FC = () => {
     <Box
       sx={{
         textAlign: 'center',
-        pt: isEditing ? 0.5 : displayMode === 'hourglass' ? 1 : 2,
-        pb: displayMode === 'hourglass' ? 0.25 : 2,
+        pt: isEditing ? 0.5 : (displayMode === 'hourglass' || displayMode === 'torch') ? 1 : 2,
+        pb: (displayMode === 'hourglass' || displayMode === 'torch') ? 0.25 : 2,
       }}
     >
       {/* Main Timer Display */}
@@ -495,6 +496,157 @@ export const TimerDisplay: React.FC = () => {
               }}
             >
               <HourglassDisplay
+                progress={duration > 0 ? remaining / duration : 0}
+                isRunning={isRunning}
+                isLowTime={timeDisplay.isLowTime}
+                isCriticalTime={timeDisplay.isCriticalTime}
+                isCompleted={isCompleted}
+                showPulse={showPulse}
+              />
+            </Box>
+          )}
+        </Box>
+      </Fade>
+
+      <Fade in={displayMode === 'torch'} timeout={200} mountOnEnter unmountOnExit>
+        <Box sx={{ mb: 0.5 }}>
+          {isEditing ? (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 1.5,
+                mb: 2,
+                width: '100%',
+                px: 2,
+                boxSizing: 'border-box',
+                '@keyframes currentTimeFlashTorch': {
+                  '0%, 100%': { boxShadow: 'none' },
+                  '50%': {
+                    boxShadow: '0 0 0 2px',
+                    boxShadowColor: 'error.main',
+                  },
+                },
+              }}
+              onBlur={handleContainerBlur}
+              tabIndex={-1}
+            >
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Starting time
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    value={editStartMinutes}
+                    onChange={(e) => setEditStartMinutes(e.target.value.replace(/[^\d]/g, ''))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlashTorch 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 999,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Starting time minutes',
+                      style: inputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                  />
+                  <Typography component="div" sx={colonStyle}>:</Typography>
+                  <TextField
+                    value={editStartSeconds}
+                    onChange={(e) => setEditStartSeconds(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlashTorch 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 59,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Starting time seconds',
+                      style: secondsInputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                  />
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" color="text.secondary">
+                  Current time
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    value={editCurrentMinutes}
+                    onChange={(e) => setEditCurrentMinutes(e.target.value.replace(/[^\d]/g, ''))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlashTorch 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 999,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Current time minutes',
+                      style: inputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                    autoFocus
+                  />
+                  <Typography component="div" sx={colonStyle}>:</Typography>
+                  <TextField
+                    value={editCurrentSeconds}
+                    onChange={(e) => setEditCurrentSeconds(e.target.value.replace(/[^\d]/g, '').slice(0, 2))}
+                    onKeyDown={handleKeyPress}
+                    sx={{
+                      ...timeInputSx,
+                      ...(showCurrentTimeFlash && {
+                        animation: 'currentTimeFlashTorch 0.4s ease-in-out 3',
+                        borderRadius: 1,
+                      }),
+                    }}
+                    inputProps={{
+                      min: 0,
+                      max: 59,
+                      inputMode: 'numeric',
+                      pattern: '[0-9]*',
+                      'aria-label': 'Current time seconds',
+                      style: secondsInputStyle,
+                    }}
+                    variant="outlined"
+                    size="small"
+                  />
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <Box
+              onClick={handleEnterEditMode}
+              sx={{
+                cursor: canEditTime ? 'pointer' : 'default',
+                display: 'inline-block',
+              }}
+            >
+              <TorchDisplay
                 progress={duration > 0 ? remaining / duration : 0}
                 isRunning={isRunning}
                 isLowTime={timeDisplay.isLowTime}

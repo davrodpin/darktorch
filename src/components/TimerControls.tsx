@@ -59,7 +59,7 @@ export const TimerControls: React.FC = () => {
     playAdjustmentSound(true);
   };
 
-  const handleDisplayModeChange = (nextMode: 'number' | 'hourglass') => {
+  const handleDisplayModeChange = (nextMode: 'number' | 'hourglass' | 'torch') => {
     initAudioOnUserInteraction();
     syncSetDisplayMode(nextMode);
   };

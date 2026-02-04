@@ -5,7 +5,7 @@ export interface TimerState {
   soundEnabled: boolean; // Whether sound notifications are enabled
   isCompleted: boolean; // Whether timer has completed
   incrementAmount: number; // Amount in seconds for +/- buttons (default: 300 = 5 min)
-  displayMode: "number" | "hourglass"; // Display mode for the timer
+  displayMode: "number" | "hourglass" | "torch"; // Display mode for the timer
   visibilityMode: "EVERYONE" | "GM_ONLY"; // Who can see the timer display
   autoExtinguish: boolean; // Whether to auto-extinguish player token lights on timer completion
 }

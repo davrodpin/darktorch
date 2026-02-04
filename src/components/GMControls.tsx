@@ -31,8 +31,8 @@ export interface GMControlsProps {
   autoExtinguish: boolean;
   onAutoExtinguishChange: (enabled: boolean) => void;
   // Display mode
-  displayMode: 'number' | 'hourglass';
-  onDisplayModeChange: (mode: 'number' | 'hourglass') => void;
+  displayMode: 'number' | 'hourglass' | 'torch';
+  onDisplayModeChange: (mode: 'number' | 'hourglass' | 'torch') => void;
   // Time adjustments
   onAddTime: () => void;
   onRemoveTime: () => void;
