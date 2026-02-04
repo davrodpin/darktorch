@@ -7,6 +7,7 @@ export interface TimerState {
   incrementAmount: number; // Amount in seconds for +/- buttons (default: 300 = 5 min)
   displayMode: "number" | "hourglass"; // Display mode for the timer
   visibilityMode: "EVERYONE" | "GM_ONLY"; // Who can see the timer display
+  autoExtinguish: boolean; // Whether to auto-extinguish player token lights on timer completion
 }
 
 export interface TimerActions {
@@ -21,6 +22,7 @@ export interface TimerActions {
   setIncrementAmount: (seconds: number) => void; // Set increment/decrement amount
   setDisplayMode: (mode: TimerState["displayMode"]) => void; // Set numeric/hourglass display
   setVisibilityMode: (mode: TimerState["visibilityMode"]) => void; // Set who can see the timer
+  setAutoExtinguish: (enabled: boolean) => void; // Set auto-extinguish behavior
 }
 
 export interface TimerStore extends TimerState, TimerActions {}

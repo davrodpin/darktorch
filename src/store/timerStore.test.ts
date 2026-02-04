@@ -13,6 +13,7 @@ function resetStore() {
     incrementAmount: 300,
     displayMode: "hourglass",
     visibilityMode: "EVERYONE",
+    autoExtinguish: true,
   });
 }
 
@@ -117,5 +118,11 @@ describe("timerStore", () => {
 
     useTimerStore.getState().setVisibilityMode("GM_ONLY");
     expect(useTimerStore.getState().visibilityMode).toBe("GM_ONLY");
+
+    expect(useTimerStore.getState().autoExtinguish).toBe(true);
+    useTimerStore.getState().setAutoExtinguish(false);
+    expect(useTimerStore.getState().autoExtinguish).toBe(false);
+    useTimerStore.getState().setAutoExtinguish(true);
+    expect(useTimerStore.getState().autoExtinguish).toBe(true);
   });
 });

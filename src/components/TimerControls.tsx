@@ -16,7 +16,7 @@ import { GMControls } from './GMControls';
 import { PlayerControls } from './PlayerControls';
 
 export const TimerControls: React.FC = () => {
-  const { isRunning, remaining, duration, setIncrementAmount, displayMode, visibilityMode } =
+  const { isRunning, remaining, duration, setIncrementAmount, displayMode, visibilityMode, autoExtinguish } =
     useTimerStore();
   const incrementAmount = useTimerIncrementAmount();
   const { playAdjustmentSound, initAudioOnUserInteraction } = useSoundNotifications();
@@ -30,6 +30,7 @@ export const TimerControls: React.FC = () => {
     syncSetTime,
     syncSetDisplayMode,
     syncSetVisibilityMode,
+    syncSetAutoExtinguish,
     isLeader,
     connectionStatus,
   } = useTimerSync();
@@ -66,6 +67,11 @@ export const TimerControls: React.FC = () => {
   const handleVisibilityModeChange = (nextMode: 'EVERYONE' | 'GM_ONLY') => {
     initAudioOnUserInteraction();
     syncSetVisibilityMode(nextMode);
+  };
+
+  const handleAutoExtinguishChange = (enabled: boolean) => {
+    initAudioOnUserInteraction();
+    syncSetAutoExtinguish(enabled);
   };
 
   const isDisabled = remaining === 0 && !isRunning;
@@ -173,6 +179,8 @@ export const TimerControls: React.FC = () => {
           isLeader={isLeader}
           visibilityMode={visibilityMode}
           onVisibilityChange={handleVisibilityModeChange}
+          autoExtinguish={autoExtinguish}
+          onAutoExtinguishChange={handleAutoExtinguishChange}
           displayMode={displayMode}
           onDisplayModeChange={handleDisplayModeChange}
           onAddTime={handleAddTime}

@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { TimerControls } from './components/TimerControls';
 import { TimerDisplay } from './components/TimerDisplay';
 import { TimerErrorBoundary } from './components/TimerErrorBoundary';
+import { useAutoExtinguish } from './hooks/useAutoExtinguish';
 import { useOwlbearSDK } from './hooks/useOwlbearSDK';
 import { useTimer } from './hooks/useTimer';
 import contextMenuService from './services/contextMenu';
@@ -19,6 +20,7 @@ import { shadowdarkTheme } from './theme/shadowdarkTheme';
 function App() {
   // Initialize all hooks and services
   useTimer();
+  useAutoExtinguish();
   const { isReady } = useOwlbearSDK();
 
   useEffect(() => {

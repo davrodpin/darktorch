@@ -22,6 +22,7 @@ export const useTimerSync = () => {
   const duration = timerState.duration;
   const displayMode = timerState.displayMode;
   const visibilityMode = timerState.visibilityMode;
+  const autoExtinguish = timerState.autoExtinguish;
 
   // Create timer sync state from current timer state
   const createSyncState = useCallback((): TimerSyncState => {
@@ -34,6 +35,7 @@ export const useTimerSync = () => {
       duration,
       displayMode,
       visibilityMode,
+      autoExtinguish,
       id: "default",
       version: Date.now(),
       lastModified: Date.now(),
@@ -50,6 +52,7 @@ export const useTimerSync = () => {
     duration,
     displayMode,
     visibilityMode,
+    autoExtinguish,
     player,
     isCurrentPlayerLeader,
   ]);
@@ -107,6 +110,9 @@ export const useTimerSync = () => {
           if (payload.visibilityMode !== undefined) {
             timerActions.setVisibilityMode(payload.visibilityMode);
           }
+          if (payload.autoExtinguish !== undefined) {
+            timerActions.setAutoExtinguish(payload.autoExtinguish);
+          }
           break;
         }
 
@@ -145,6 +151,9 @@ export const useTimerSync = () => {
 
           if (payload.visibilityMode !== undefined) {
             timerActions.setVisibilityMode(payload.visibilityMode);
+          }
+          if (payload.autoExtinguish !== undefined) {
+            timerActions.setAutoExtinguish(payload.autoExtinguish);
           }
           break;
         }
@@ -265,6 +274,22 @@ export const useTimerSync = () => {
     [isGM, timerActions, createSyncState],
   );
 
+  const syncSetAutoExtinguish = useCallback(
+    (enabled: boolean) => {
+      if (!isGM) {
+        console.warn("Only the Game Master can change auto-extinguish mode");
+        return;
+      }
+
+      timerActions.setAutoExtinguish(enabled);
+
+      const syncState = createSyncState();
+      syncState.autoExtinguish = enabled;
+      timerSyncService.broadcastTimerUpdate(syncState);
+    },
+    [isGM, timerActions, createSyncState],
+  );
+
   // Retry queued messages when connection is restored
   useEffect(() => {
     if (connectionState.isConnected && !connectionState.isReconnecting) {
@@ -291,6 +316,7 @@ export const useTimerSync = () => {
     syncSetTime,
     syncSetDisplayMode,
     syncSetVisibilityMode,
+    syncSetAutoExtinguish,
     isLeader: isCurrentPlayerLeader(),
     connectionStatus: timerSyncService.getConnectionStatus(),
     createSyncState,

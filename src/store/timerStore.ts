@@ -15,6 +15,7 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   incrementAmount: 300, // Default 5 minutes
   displayMode: "hourglass",
   visibilityMode: "EVERYONE",
+  autoExtinguish: true,
 
   // Actions
   start: () => {
@@ -89,6 +90,10 @@ export const useTimerStore = create<TimerStore>((set, get) => ({
   setVisibilityMode: (mode: TimerStore["visibilityMode"]) => {
     set({ visibilityMode: mode });
   },
+
+  setAutoExtinguish: (enabled: boolean) => {
+    set({ autoExtinguish: enabled });
+  },
 }));
 
 // Selectors for optimized re-renders
@@ -106,4 +111,6 @@ export const useTimerDisplayMode = () =>
   useTimerStore((state) => state.displayMode);
 export const useTimerVisibilityMode = () =>
   useTimerStore((state) => state.visibilityMode);
+export const useTimerAutoExtinguish = () =>
+  useTimerStore((state) => state.autoExtinguish);
 export const useTimerActions = () => useTimerStore((state) => state);

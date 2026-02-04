@@ -1,5 +1,7 @@
 import {
   Add,
+  FlashlightOff,
+  FlashlightOn,
   HourglassEmpty,
   Pause,
   PlayArrow,
@@ -25,6 +27,9 @@ export interface GMControlsProps {
   // Visibility
   visibilityMode: 'EVERYONE' | 'GM_ONLY';
   onVisibilityChange: (mode: 'EVERYONE' | 'GM_ONLY') => void;
+  // Auto-extinguish
+  autoExtinguish: boolean;
+  onAutoExtinguishChange: (enabled: boolean) => void;
   // Display mode
   displayMode: 'number' | 'hourglass';
   onDisplayModeChange: (mode: 'number' | 'hourglass') => void;
@@ -46,6 +51,8 @@ export const GMControls: React.FC<GMControlsProps> = ({
   isLeader,
   visibilityMode,
   onVisibilityChange,
+  autoExtinguish,
+  onAutoExtinguishChange,
   displayMode,
   onDisplayModeChange,
   onAddTime,
@@ -125,6 +132,43 @@ export const GMControls: React.FC<GMControlsProps> = ({
                     tooltip:
                       'Only the GM can see the timer. Players see a hidden placeholder.',
                     icon: <VisibilityOff fontSize="small" />,
+                  },
+                ]}
+              />
+            </span>
+          </Tooltip>
+
+          {/* Auto-Extinguish Mode */}
+          <Tooltip
+            title={
+              isLeader
+                ? 'Auto-extinguish mode'
+                : 'Only the leader can change auto-extinguish mode'
+            }
+            disableHoverListener={isLeader}
+            disableFocusListener={isLeader}
+            disableTouchListener={isLeader}
+          >
+            <span style={{ display: 'inline-flex' }}>
+              <TwoIconToggleGroup<'enabled' | 'disabled'>
+                ariaLabel="Auto-extinguish mode"
+                value={autoExtinguish ? 'enabled' : 'disabled'}
+                disabled={!isLeader}
+                onChange={(val) => onAutoExtinguishChange(val === 'enabled')}
+                options={[
+                  {
+                    value: 'enabled',
+                    ariaLabel: 'Auto-extinguish enabled',
+                    tooltip:
+                      'When the timer runs out, player token lights turn off automatically.',
+                    icon: <FlashlightOn fontSize="small" />,
+                  },
+                  {
+                    value: 'disabled',
+                    ariaLabel: 'Auto-extinguish disabled',
+                    tooltip:
+                      'Player token lights remain on when the timer runs out.',
+                    icon: <FlashlightOff fontSize="small" />,
                   },
                 ]}
               />
