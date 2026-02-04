@@ -233,3 +233,48 @@ npm run preview # Preview production build
 2. Deploy `dist` folder to chosen platform
 3. Ensure `manifest.json` is accessible at root URL
 4. Test installation via Owlbear Rodeo extension menu
+
+## Git Commit Conventions
+
+This project follows the
+[Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/)
+specification.
+
+### Format
+
+```
+<type>[optional scope]: <description>
+```
+
+- The description must be **lowercase** and written in **imperative mood**
+  (e.g. "add feature", not "added feature" or "Adding feature").
+- Breaking changes are indicated by appending `!` after the type/scope
+  (e.g. `feat!: remove legacy timer API`).
+
+### Types
+
+| Type    | Purpose                                          |
+| ------- | ------------------------------------------------ |
+| `feat`  | A new feature                                    |
+| `fix`   | A bug fix                                        |
+| `docs`  | Documentation-only changes                       |
+| `style` | Code style changes (formatting, no logic change) |
+| `chore` | Maintenance tasks, dependency bumps, releases    |
+| `infra` | Infrastructure and CI/CD changes                 |
+
+### Scopes
+
+| Scope     | Usage                                  |
+| --------- | -------------------------------------- |
+| `release` | Release-related commits (e.g. version bumps) |
+
+### Examples
+
+```
+feat: add hourglass display mode
+fix: token contextual menu
+docs: update tags to meet ORB extension requirements
+chore(release): v1.1.1
+infra: add github actions workflow
+feat!: drop support for legacy timer format
+```
