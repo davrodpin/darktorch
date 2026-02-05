@@ -18,13 +18,17 @@ Shadowdark RPG adventures.
 
 - **Real-time torch countdown:** Timer defaults to one hour, matching Shadowdark
   torch durations.
+- **Custom starting time:** Set a custom duration instead of the default one
+  hour.
 - **Pause and resume:** The timer can be paused and resumed at any point.
 - **Adjust timer:** Modify the remaining time manually, to account for in-game
   changes.
 - **Visibility options:** Timer display can be limited to GM only or shown to
   all players.
 - **Display modes:** Choose between standard numeric countdown or a thematic
-  hourglass visualization.
+  hourglass animation.
+- **Auto-extinguish:** Player token lights automatically turn off when the timer
+  completes.
 - **Permission controls:** By default, only the GM can manage the torch timer,
   but this can be configured to allow players.
 - **Shadowdark-inspired style:** UI mimics the look and feel of the Shadowdark
