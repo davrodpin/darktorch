@@ -1,6 +1,6 @@
 import { HourglassEmpty, Timer } from '@mui/icons-material';
 import React from 'react';
-import { TwoIconToggleGroup } from './TwoIconToggleGroup';
+import { ToggleIconButton } from './ToggleIconButton';
 
 export interface DisplayModeToggleProps {
   value: 'number' | 'hourglass';
@@ -12,22 +12,21 @@ export const DisplayModeToggle: React.FC<DisplayModeToggleProps> = ({
   onChange,
 }) => {
   return (
-    <TwoIconToggleGroup<'number' | 'hourglass'>
-      ariaLabel="Display mode"
+    <ToggleIconButton<'number' | 'hourglass'>
       value={value}
       onChange={onChange}
-      options={[
+      states={[
         {
           value: 'hourglass',
-          ariaLabel: 'Hourglass display',
-          tooltip: 'Show an hourglass animation (no numeric timer).',
           icon: <HourglassEmpty fontSize="small" />,
+          tooltip: 'Switch to hourglass display.',
+          ariaLabel: 'Switch to hourglass display',
         },
         {
           value: 'number',
-          ariaLabel: 'Numeric display',
-          tooltip: 'Show remaining time as MM:SS.',
           icon: <Timer fontSize="small" />,
+          tooltip: 'Switch to numeric MM:SS display.',
+          ariaLabel: 'Switch to numeric display',
         },
       ]}
     />

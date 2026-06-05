@@ -14,6 +14,7 @@ import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import React from 'react';
 import { DisplayModeToggle } from './DisplayModeToggle';
 import { PermissionWrapper } from './PermissionWrapper';
+import { ToggleIconButton } from './ToggleIconButton';
 import { TwoIconToggleGroup } from './TwoIconToggleGroup';
 
 export interface GMControlsProps {
@@ -73,7 +74,6 @@ export const GMControls: React.FC<GMControlsProps> = ({
             flexWrap: 'nowrap',
             justifyContent: 'center',
             alignItems: 'center',
-            px: 1,
           }}
         >
           {/* Start/Reset */}
@@ -104,77 +104,48 @@ export const GMControls: React.FC<GMControlsProps> = ({
           <DisplayModeToggle value={displayMode} onChange={onDisplayModeChange} />
 
           {/* Visibility Mode */}
-          <Tooltip
-            title={
-              isLeader
-                ? 'Visibility mode'
-                : 'Only the leader can change visibility mode'
-            }
-            disableHoverListener={isLeader}
-            disableFocusListener={isLeader}
-            disableTouchListener={isLeader}
-          >
-            <span style={{ display: 'inline-flex' }}>
-              <TwoIconToggleGroup<'EVERYONE' | 'GM_ONLY'>
-                ariaLabel="Visibility mode"
-                value={visibilityMode}
-                disabled={!isLeader}
-                onChange={onVisibilityChange}
-                options={[
-                  {
-                    value: 'EVERYONE',
-                    ariaLabel: 'Everyone can see',
-                    tooltip: 'Everyone can see the timer.',
-                    icon: <Visibility fontSize="small" />,
-                  },
-                  {
-                    value: 'GM_ONLY',
-                    ariaLabel: 'GM only can see',
-                    tooltip:
-                      'Only the GM can see the timer. Players see a hidden placeholder.',
-                    icon: <VisibilityOff fontSize="small" />,
-                  },
-                ]}
-              />
-            </span>
-          </Tooltip>
+          <ToggleIconButton<'EVERYONE' | 'GM_ONLY'>
+            value={visibilityMode}
+            disabled={!isLeader}
+            disabledTooltip="Only the leader can change visibility mode"
+            onChange={onVisibilityChange}
+            states={[
+              {
+                value: 'EVERYONE',
+                icon: <Visibility fontSize="small" />,
+                tooltip: 'Show timer to everyone.',
+                ariaLabel: 'Show timer to everyone',
+              },
+              {
+                value: 'GM_ONLY',
+                icon: <VisibilityOff fontSize="small" />,
+                tooltip: 'Hide timer — only the GM sees it.',
+                ariaLabel: 'Hide timer — GM only',
+              },
+            ]}
+          />
 
           {/* Auto-Extinguish Mode */}
-          <Tooltip
-            title={
-              isLeader
-                ? 'Auto-extinguish mode'
-                : 'Only the leader can change auto-extinguish mode'
-            }
-            disableHoverListener={isLeader}
-            disableFocusListener={isLeader}
-            disableTouchListener={isLeader}
-          >
-            <span style={{ display: 'inline-flex' }}>
-              <TwoIconToggleGroup<'enabled' | 'disabled'>
-                ariaLabel="Auto-extinguish mode"
-                value={autoExtinguish ? 'enabled' : 'disabled'}
-                disabled={!isLeader}
-                onChange={(val) => onAutoExtinguishChange(val === 'enabled')}
-                options={[
-                  {
-                    value: 'enabled',
-                    ariaLabel: 'Auto-extinguish enabled',
-                    tooltip:
-                      'When the timer runs out, player token lights turn off automatically.',
-                    icon: <FlashlightOn fontSize="small" />,
-                  },
-                  {
-                    value: 'disabled',
-                    ariaLabel: 'Auto-extinguish disabled',
-                    tooltip:
-                      'Player token lights remain on when the timer runs out.',
-                    icon: <FlashlightOff fontSize="small" />,
-                  },
-                ]}
-              />
-            </span>
-          </Tooltip>
+          <ToggleIconButton<'enabled' | 'disabled'>
+            value={autoExtinguish ? 'enabled' : 'disabled'}
+            disabled={!isLeader}
+            disabledTooltip="Only the leader can change auto-extinguish mode"
+            onChange={(val) => onAutoExtinguishChange(val === 'enabled')}
+            states={[
+              {
+                value: 'enabled',
+                icon: <FlashlightOn fontSize="small" />,
+                tooltip: 'Enable auto-extinguish — lights turn off when the timer runs out.',
+                ariaLabel: 'Enable auto-extinguish',
+              },
+              {
+                value: 'disabled',
+                icon: <FlashlightOff fontSize="small" />,
+                tooltip: 'Disable auto-extinguish — lights stay on when the timer runs out.',
+                ariaLabel: 'Disable auto-extinguish',
+              },
+            ]}
+          />
         </Box>
       </PermissionWrapper>
 

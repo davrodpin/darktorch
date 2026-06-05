@@ -5,4 +5,5 @@ export { PlayerControls } from "./PlayerControls";
 export { TimerControls } from "./TimerControls";
 export { TimerDisplay } from "./TimerDisplay";
 export { TimerErrorBoundary } from "./TimerErrorBoundary";
+export { ToggleIconButton } from "./ToggleIconButton";
 export { TwoIconToggleGroup } from "./TwoIconToggleGroup";
