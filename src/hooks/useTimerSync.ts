@@ -9,7 +9,7 @@ import { usePlayerRole } from "./usePlayerRole";
 export const useTimerSync = () => {
   const { player, isGM } = usePlayerRole();
   const { isCurrentPlayerLeader } = useLeaderElection();
-  const { isReady, connectionState } = useOwlbearSDK();
+  const { isReady } = useOwlbearSDK();
   const timerActions = useTimerActions();
 
   // Use individual selectors to avoid getSnapshot issues
@@ -290,12 +290,10 @@ export const useTimerSync = () => {
     [isGM, timerActions, createSyncState],
   );
 
-  // Retry queued messages when connection is restored
+  // Retry any queued messages once the SDK is ready.
   useEffect(() => {
-    if (connectionState.isConnected && !connectionState.isReconnecting) {
-      timerSyncService.retryQueuedMessages();
-    }
-  }, [connectionState]);
+    if (isReady) timerSyncService.retryQueuedMessages();
+  }, [isReady]);
 
   // Periodic sync from leader (heartbeat)
   useEffect(() => {

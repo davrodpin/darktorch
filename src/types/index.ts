@@ -70,13 +70,6 @@ export interface LeaderState {
   heartbeatInterval?: ReturnType<typeof setInterval>;
 }
 
-export interface ConnectionState {
-  isConnected: boolean;
-  isReconnecting: boolean;
-  lastConnected: number;
-  reconnectAttempts: number;
-}
-
 // Extension metadata constants
 export const EXTENSION_ID = "com.github.davrodpin.darktorch";
 

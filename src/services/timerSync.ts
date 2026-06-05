@@ -234,6 +234,9 @@ class TimerSyncService {
       // Update connection status
       this.isConnected = true;
       this.retryAttempts = 0;
+
+      // Drain any messages that were queued during a transient send failure.
+      if (this.messageQueue.length > 0) void this.retryQueuedMessages();
     } catch (error) {
       // If there is no active scene yet, Owlbear may throw a MissingDataError /
       // \"No scene found\". In that case we silently drop the message instead
